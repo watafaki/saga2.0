@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Atividades | Aluno | Saga</title>
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Novo Sistema de Design SAGA -->
+    <link rel="stylesheet" href="../saga-design-system.css">
+    <link rel="stylesheet" href="../saga-additional-styles.css">
+
+    <style>
+        .activities-header {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .activity-item {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            transition: all 0.2s ease;
+        }
+        
+        .activity-item:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+        }
+        
+        .activity-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .activity-description {
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--space-md);
+        }
+        
+        .activity-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--color-border);
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-full);
+            background: var(--color-surface);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+        
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+  </style>
+</head>
+<body class="saga-layout">
+    <!-- O sistema de componentes criará automaticamente a sidebar e header -->
+    
+    <main class="saga-main">
+        <div class="saga-content" style="padding: var(--space-xl);">
+            <!-- Header -->
+            <div class="activities-header">
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: var(--space-xs);">Suas Atividades</h1>
+                <p style="opacity: 0.9;">Acompanhe e complete suas tarefas acadêmicas</p>
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="stats-row">
+                <div class="saga-kpi-card">
+                    <div class="saga-kpi-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                    </div>
+                    <div class="saga-kpi-value" id="total-activities">0</div>
+                    <div class="saga-kpi-label">Total de Atividades</div>
+                </div>
+                <div class="saga-kpi-card">
+                    <div class="saga-kpi-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                    </div>
+                    <div class="saga-kpi-value" id="pending-activities">0</div>
+                    <div class="saga-kpi-label">Pendentes</div>
+                </div>
+                <div class="saga-kpi-card">
+                    <div class="saga-kpi-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22,4 12,14.01 9,11.01"/>
+                        </svg>
+                    </div>
+                    <div class="saga-kpi-value" id="completed-activities">0</div>
+                    <div class="saga-kpi-label">Concluídas</div>
+                </div>
+                <div class="saga-kpi-card">
+                    <div class="saga-kpi-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                    </div>
+                    <div class="saga-kpi-value" id="overdue-activities">0</div>
+                    <div class="saga-kpi-label">Atrasadas</div>
+    </div>
+    </div>
+
+            <!-- Filtros -->
+            <div class="filter-section">
+                <button class="filter-btn active" onclick="filterActivities('all')">Todas</button>
+                <button class="filter-btn" onclick="filterActivities('pending')">Pendentes</button>
+                <button class="filter-btn" onclick="filterActivities('completed')">Concluídas</button>
+                <button class="filter-btn" onclick="filterActivities('overdue')">Atrasadas</button>
+            </div>
+
+            <!-- Lista de Atividades -->
+            <section class="saga-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg); padding-bottom: var(--space-md); border-bottom: 1px solid var(--color-border);">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--color-text-primary);">Lista de Atividades</h2>
+                    <div class="saga-search">
+                        <svg class="saga-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <input type="text" class="saga-search-input" placeholder="Buscar atividades..." id="search-input" onkeyup="searchActivities()">
+      </div>
+                </div>
+                
+                <div id="activities-container">
+                    <!-- Atividades serão carregadas via JavaScript -->
+                </div>
+            </section>
+    </div>
+  </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    
+    <!-- Sistema de Componentes SAGA -->
+    <script src="../saga-components.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M",
+      authDomain: "saga-1d4e2.firebaseapp.com",
+            databaseURL: "https://saga-1d4e2-default-rtdb.firebaseio.com",
+      projectId: "saga-1d4e2",
+      storageBucket: "saga-1d4e2.firebasestorage.app",
+      messagingSenderId: "419315470764",
+      appId: "1:419315470764:web:4e3fd28ca21f935bc52a09",
+      measurementId: "G-SSBL21VWE3"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+        let currentUser = null;
+        let activities = [];
+        let filteredActivities = [];
+        let currentFilter = 'all';
+
+        function loadActivities() {
+            if (!currentUser) {
+                activities = [
+                    {
+                        id: 'demo-1',
+                        titulo: 'Exercícios de Matemática',
+                        descricao: 'Resolver os exercícios das páginas 45 a 50 do livro didático sobre equações quadráticas.',
+                        prazo: '2024-12-30',
+                        professor: 'Prof. Silva',
+                        turma: '3º Ano A',
+                        concluida: false
+                    },
+                    {
+                        id: 'demo-2',
+                        titulo: 'Redação sobre Literatura',
+                        descricao: 'Escrever uma redação de 30 linhas sobre o Romantismo brasileiro.',
+                        prazo: '2024-12-28',
+                        professor: 'Prof. Maria',
+                        turma: '3º Ano A',
+                        concluida: false
+                    },
+                    {
+                        id: 'demo-3',
+                        titulo: 'Projeto de Ciências',
+                        descricao: 'Desenvolver um projeto sobre fontes de energia renovável.',
+                        prazo: '2025-01-15',
+                        professor: 'Prof. João',
+                        turma: '3º Ano A',
+                        concluida: true
+                    }
+                ];
+                processActivities();
+                return;
+            }
+
+            // Carregar atividades do Firebase
+            db.ref('atividades').once('value')
+                .then((snapshot) => {
+                    const firebaseActivities = snapshot.val() || {};
+                    activities = Object.keys(firebaseActivities).map(key => ({
+                        id: key,
+                        ...firebaseActivities[key],
+                        professor: `Prof. ${firebaseActivities[key].professorId?.substring(0, 8) || 'Desconhecido'}`,
+                        concluida: false
+                    }));
+
+                    // Verificar atividades concluídas pelo usuário
+                    if (currentUser) {
+                        db.ref(`users/${currentUser.uid}/atividadesConcluidas`).once('value')
+                            .then((snapshot) => {
+                                const concluidas = snapshot.val() || {};
+                                const idsConcluidas = Object.keys(concluidas);
+                                
+                                activities.forEach(atividade => {
+                                    if (idsConcluidas.includes(atividade.id)) {
+                                        atividade.concluida = true;
+                                    }
+                                });
+                                
+                                processActivities();
+                            })
+                            .catch(() => processActivities());
+                    } else {
+                        processActivities();
+                    }
+                })
+                .catch(error => console.error('Erro ao carregar atividades:', error));
+        }
+
+        function processActivities() {
+            const today = new Date().toISOString().split('T')[0];
+            const pending = activities.filter(a => !a.concluida);
+            const completed = activities.filter(a => a.concluida);
+            const overdue = activities.filter(a => a.prazo < today && !a.concluida);
+
+            document.getElementById('total-activities').textContent = activities.length;
+            document.getElementById('pending-activities').textContent = pending.length;
+            document.getElementById('completed-activities').textContent = completed.length;
+            document.getElementById('overdue-activities').textContent = overdue.length;
+
+            applyFilter();
+        }
+
+        function applyFilter() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            switch(currentFilter) {
+                case 'pending':
+                    filteredActivities = activities.filter(a => !a.concluida);
+                    break;
+                case 'completed':
+                    filteredActivities = activities.filter(a => a.concluida);
+                    break;
+                case 'overdue':
+                    filteredActivities = activities.filter(a => a.prazo < today && !a.concluida);
+                    break;
+                default:
+                    filteredActivities = [...activities];
+            }
+
+            displayActivities();
+        }
+
+        function displayActivities() {
+            const container = document.getElementById('activities-container');
+            if (!container) return;
+
+            if (filteredActivities.length === 0) {
+                container.innerHTML = `
+                    <div class="saga-empty-state">
+                        <div class="saga-empty-state-icon">📚</div>
+                        <div class="saga-empty-state-title">Nenhuma atividade encontrada</div>
+                        <div class="saga-empty-state-description">
+                            ${currentFilter === 'all' ? 'Não há atividades disponíveis no momento.' : 'Não há atividades para este filtro.'}
+                        </div>
+            </div>
+          `;
+          return;
+        }
+        
+            container.innerHTML = filteredActivities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-header">
+                        <div>
+                            <div class="activity-title">${activity.titulo}</div>
+                            <div class="saga-badge ${getActivityStatusClass(activity)}">${getActivityStatusText(activity)}</div>
+                        </div>
+                        ${!activity.concluida ? `
+                            <button class="saga-button small primary" onclick="markAsCompleted('${activity.id}')" title="Marcar como concluída">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20,6 9,17 4,12"/>
+                                </svg>
+                                Concluir
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="activity-description">${activity.descricao || 'Sem descrição disponível'}</div>
+                    <div class="activity-meta">
+                        <div style="display: flex; gap: var(--space-lg); font-size: 0.875rem; color: var(--color-text-secondary);">
+                            <span><strong>Professor:</strong> ${activity.professor}</span>
+                            <span><strong>Turma:</strong> ${activity.turma || 'Não especificada'}</span>
+                        </div>
+                        <span style="font-size: 0.875rem; color: var(--color-text-secondary);">
+                            <strong>Prazo:</strong> ${formatDate(activity.prazo)}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getActivityStatusClass(activity) {
+            const today = new Date().toISOString().split('T')[0];
+            if (activity.concluida) return 'success';
+            if (activity.prazo < today) return 'error';
+            if (activity.prazo === today) return 'warning';
+            return 'neutral';
+        }
+
+        function getActivityStatusText(activity) {
+            const today = new Date().toISOString().split('T')[0];
+            if (activity.concluida) return 'Concluída';
+            if (activity.prazo < today) return 'Atrasada';
+            if (activity.prazo === today) return 'Vence hoje';
+            return 'Pendente';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Não definido';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        }
+
+        function filterActivities(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            applyFilter();
+        }
+
+        function searchActivities() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            if (searchTerm === '') {
+                applyFilter();
+                return;
+            }
+
+            filteredActivities = activities.filter(activity => 
+                activity.titulo.toLowerCase().includes(searchTerm) ||
+                (activity.descricao && activity.descricao.toLowerCase().includes(searchTerm)) ||
+                (activity.professor && activity.professor.toLowerCase().includes(searchTerm))
+            );
+
+            displayActivities();
+        }
+
+        function markAsCompleted(activityId) {
+            if (!currentUser) {
+                sagaComponents.showToast('Você precisa estar logado para marcar atividades como concluídas', 'warning');
+                return;
+            }
+
+            if (activityId.startsWith('demo-')) {
+                sagaComponents.showToast('Atividade marcada como concluída!', 'success');
+                const activity = activities.find(a => a.id === activityId);
+                if (activity) activity.concluida = true;
+                processActivities();
+                return;
+            }
+
+            db.ref(`users/${currentUser.uid}/atividadesConcluidas/${activityId}`).set({
+                concluida: true,
+                dataConclusao: firebase.database.ServerValue.TIMESTAMP,
+                atividadeId: activityId
+            })
+            .then(() => {
+                sagaComponents.showToast('Atividade marcada como concluída!', 'success');
+                loadActivities();
+            })
+            .catch(error => sagaComponents.showToast('Erro ao marcar atividade como concluída', 'error'));
+        }
+
+        // Inicialização quando o usuário estiver autenticado
+        auth.onAuthStateChanged((user) => {
+            currentUser = user;
+            if (user) {
+                loadActivities();
+            } else {
+                window.location.href = '../login.html';
+            }
+        });
+
+        // Inicialização da página
+        document.addEventListener('DOMContentLoaded', () => {
+            // O sistema de componentes já será inicializado automaticamente
+            loadActivities();
+        });
+  </script>
+</body>
+</html>

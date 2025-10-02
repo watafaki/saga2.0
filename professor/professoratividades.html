@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Atividades | Professor | Saga</title>
+  <link rel="icon" type="image/png" href="../logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Novo Sistema de Design SAGA -->
+    <link rel="stylesheet" href="../saga-design-system.css">
+    <link rel="stylesheet" href="../saga-additional-styles.css">
+
+    <style>
+        .activities-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+      display: flex;
+            justify-content: space-between;
+      align-items: center;
+        }
+        
+        .activity-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            transition: all 0.2s ease;
+            margin-bottom: var(--space-md);
+        }
+        
+        .activity-card:hover {
+            border-color: var(--color-success);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .activity-header {
+      display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+        }
+        
+        .activity-title {
+            font-size: 1.125rem;
+      font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .activity-description {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: var(--space-md);
+        }
+        
+        .activity-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--color-border);
+        }
+        
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .stat-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-success);
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+            margin-top: var(--space-xs);
+    }
+  </style>
+</head>
+<body class="saga-layout">
+    <main class="saga-main">
+        <div class="saga-content" style="padding: var(--space-xl);">
+            <!-- Header -->
+            <div class="activities-header">
+                <div>
+                    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: var(--space-xs);">Gerenciar Atividades</h1>
+                    <p style="opacity: 0.9;">Crie, edite e acompanhe o progresso das atividades da sua turma</p>
+    </div>
+                <button class="saga-button primary large" onclick="openCreateActivityModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+                    Nova Atividade
+        </button>
+      </div>
+
+            <!-- Estatísticas -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-activities">0</div>
+                    <div class="stat-label">Total de Atividades</div>
+            </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pending-activities">0</div>
+                    <div class="stat-label">Pendentes</div>
+            </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completed-activities">0</div>
+                    <div class="stat-label">Entregues</div>
+            </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="overdue-activities">0</div>
+                    <div class="stat-label">Atrasadas</div>
+            </div>
+            </div>
+
+            <!-- Lista de Atividades -->
+            <section class="saga-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg); padding-bottom: var(--space-md); border-bottom: 1px solid var(--color-border);">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--color-text-primary); display: flex; align-items: center; gap: var(--space-sm);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                        Suas Atividades
+                    </h2>
+        </div>
+        
+                <div id="activities-container">
+                    <!-- Atividades serão carregadas via JavaScript -->
+          </div>
+            </section>
+        </div>
+      </main>
+
+    <!-- Firebase & Components -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="../saga-components.js"></script>
+
+    <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M",
+      authDomain: "saga-1d4e2.firebaseapp.com",
+      databaseURL: "https://saga-1d4e2-default-rtdb.firebaseio.com",
+      projectId: "saga-1d4e2",
+            storageBucket: "saga-1d4e2.firebasestorage.app",
+            messagingSenderId: "419315470764",
+            appId: "1:419315470764:web:4e3fd28ca21f935bc52a09",
+            measurementId: "G-SSBL21VWE3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let currentUser = null;
+        let activities = [];
+
+        function loadActivities() {
+            if (!currentUser) {
+                activities = [
+                    {
+                        id: 'demo-1',
+                        titulo: 'Exercícios de Matemática',
+                        descricao: 'Resolver os exercícios das páginas 45 a 50 do livro didático sobre equações quadráticas.',
+                        prazo: '2024-12-30',
+                        turma: '3º Ano A',
+                        status: 'pending'
+                    },
+                    {
+                        id: 'demo-2',
+                        titulo: 'Projeto de Ciências',
+                        descricao: 'Desenvolver um projeto sobre fontes de energia renovável com apresentação.',
+                        prazo: '2025-01-15',
+                        turma: '3º Ano A',
+                        status: 'pending'
+                    }
+                ];
+                processActivities();
+                return;
+            }
+
+            db.ref('atividades').once('value')
+                .then((snapshot) => {
+                    const firebaseActivities = snapshot.val() || {};
+                    activities = Object.keys(firebaseActivities)
+                        .filter(key => firebaseActivities[key].professorId === currentUser.uid)
+                        .map(key => ({
+                            id: key,
+                            ...firebaseActivities[key]
+                        }));
+                    processActivities();
+                })
+                .catch(error => console.error('Erro ao carregar atividades:', error));
+        }
+
+        function processActivities() {
+            const today = new Date().toISOString().split('T')[0];
+            const pending = activities.filter(a => !a.status || a.status === 'pending');
+            const completed = activities.filter(a => a.status === 'completed');
+            const overdue = activities.filter(a => a.prazo < today && (!a.status || a.status === 'pending'));
+
+            document.getElementById('total-activities').textContent = activities.length;
+            document.getElementById('pending-activities').textContent = pending.length;
+            document.getElementById('completed-activities').textContent = completed.length;
+            document.getElementById('overdue-activities').textContent = overdue.length;
+
+            displayActivities();
+        }
+
+        function displayActivities() {
+            const container = document.getElementById('activities-container');
+            if (!container) return;
+
+            if (activities.length === 0) {
+                container.innerHTML = `
+                    <div class="saga-empty-state">
+                        <div class="saga-empty-state-icon">📝</div>
+                        <div class="saga-empty-state-title">Nenhuma atividade encontrada</div>
+                        <div class="saga-empty-state-description">Crie sua primeira atividade clicando no botão acima.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = activities.map(activity => `
+                <div class="activity-card">
+                    <div class="activity-header">
+                        <div>
+                            <div class="activity-title">${activity.titulo}</div>
+                            <div class="saga-badge ${getActivityStatusClass(activity)}">${getActivityStatusText(activity)}</div>
+                        </div>
+                        <div style="display: flex; gap: var(--space-sm);">
+                            <button class="saga-button small ghost" onclick="editActivity('${activity.id}')" title="Editar">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </button>
+                            <button class="saga-button small ghost" onclick="deleteActivity('${activity.id}')" title="Excluir" style="color: var(--color-error);">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3,6 5,6 21,6"/>
+                                    <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="activity-description">${activity.descricao || 'Sem descrição'}</div>
+                    <div class="activity-meta">
+                        <div style="display: flex; gap: var(--space-lg); font-size: 0.875rem; color: var(--color-text-secondary);">
+                            <span><strong>Prazo:</strong> ${formatDate(activity.prazo)}</span>
+                            <span><strong>Turma:</strong> ${activity.turma || 'Não especificada'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getActivityStatusClass(activity) {
+            const today = new Date().toISOString().split('T')[0];
+            if (activity.status === 'completed') return 'success';
+            if (activity.prazo < today) return 'error';
+            return 'neutral';
+        }
+
+        function getActivityStatusText(activity) {
+            const today = new Date().toISOString().split('T')[0];
+            if (activity.status === 'completed') return 'Concluída';
+            if (activity.prazo < today) return 'Atrasada';
+            return 'Pendente';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Não definido';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        }
+
+        function openCreateActivityModal() {
+            const modal = sagaComponents.createModal(
+                'Nova Atividade',
+                `
+                <form class="saga-form">
+                    <div class="saga-form-group">
+                        <label class="saga-form-label required">Título da Atividade</label>
+                        <input type="text" id="activity-title" class="saga-form-input" required>
+                    </div>
+                    <div class="saga-form-group">
+                        <label class="saga-form-label">Descrição</label>
+                        <textarea id="activity-description" class="saga-form-textarea" rows="4"></textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+                        <div class="saga-form-group">
+                            <label class="saga-form-label required">Prazo</label>
+                            <input type="date" id="activity-deadline" class="saga-form-input" required>
+                        </div>
+                        <div class="saga-form-group">
+                            <label class="saga-form-label">Turma</label>
+                            <select id="activity-class" class="saga-form-select">
+                                <option value="3º Ano A">3º Ano A</option>
+                                <option value="3º Ano B">3º Ano B</option>
+                                <option value="2º Ano A">2º Ano A</option>
+                                <option value="2º Ano B">2º Ano B</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+                `,
+                [
+                    { text: 'Cancelar', type: 'secondary', onclick: 'this.closest(".saga-modal-backdrop").remove()' },
+                    { text: 'Criar Atividade', type: 'primary', onclick: 'submitCreateActivity()' }
+                ]
+            );
+        }
+
+        function submitCreateActivity() {
+            const title = document.getElementById('activity-title').value;
+            const description = document.getElementById('activity-description').value;
+            const deadline = document.getElementById('activity-deadline').value;
+            const classRoom = document.getElementById('activity-class').value;
+
+            if (!title || !deadline) {
+                sagaComponents.showToast('Preencha todos os campos obrigatórios', 'warning');
+                return;
+            }
+
+            if (!currentUser) {
+                sagaComponents.showToast('Você precisa estar logado', 'warning');
+                return;
+            }
+
+            const newActivity = {
+                titulo: title,
+                descricao: description,
+                prazo: deadline,
+                turma: classRoom,
+                professorId: currentUser.uid,
+                dataCriacao: firebase.database.ServerValue.TIMESTAMP,
+                status: 'pending'
+            };
+
+            db.ref('atividades').push(newActivity)
+                .then(() => {
+                    sagaComponents.showToast('Atividade criada com sucesso!', 'success');
+                    document.querySelector('.saga-modal-backdrop').remove();
+                    loadActivities();
+                })
+                .catch(error => sagaComponents.showToast('Erro ao criar atividade', 'error'));
+        }
+
+        function editActivity(activityId) {
+            sagaComponents.showToast('Funcionalidade de edição em desenvolvimento', 'info');
+        }
+
+        function deleteActivity(activityId) {
+            if (!confirm('Tem certeza que deseja excluir esta atividade?')) return;
+
+            if (!currentUser) {
+                sagaComponents.showToast('Você precisa estar logado', 'warning');
+                return;
+            }
+
+            db.ref(`atividades/${activityId}`).remove()
+            .then(() => {
+                    sagaComponents.showToast('Atividade excluída com sucesso!', 'success');
+                    loadActivities();
+                })
+                .catch(error => sagaComponents.showToast('Erro ao excluir atividade', 'error'));
+        }
+
+        auth.onAuthStateChanged((user) => {
+            currentUser = user;
+            if (user) {
+                loadActivities();
+            } else {
+                window.location.href = '../login.html';
+            }
+        });
+
+        window.logout = function() {
+            if (confirm('Deseja realmente sair?')) {
+                auth.signOut().then(() => window.location.href = '../login.html');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', loadActivities);
+  </script>
+</body>
+</html>

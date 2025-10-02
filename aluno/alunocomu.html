@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Comunicados | Aluno | Saga</title>
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Novo Sistema de Design SAGA -->
+    <link rel="stylesheet" href="../saga-design-system.css">
+    <link rel="stylesheet" href="../saga-additional-styles.css">
+
+    <style>
+        .communications-header {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .comm-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            transition: all 0.2s ease;
+        }
+        
+        .comm-card:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .comm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+        }
+        
+        .comm-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .comm-content {
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--space-md);
+        }
+        
+        .comm-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--color-border);
+            font-size: 0.875rem;
+            color: var(--color-text-tertiary);
+        }
+        
+        .priority-badge {
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .priority-high {
+            background: var(--color-error-light);
+            color: var(--color-error);
+        }
+        
+        .priority-medium {
+            background: var(--color-warning-light);
+            color: var(--color-warning);
+        }
+        
+        .priority-low {
+            background: var(--color-info-light);
+            color: var(--color-info);
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-full);
+            background: var(--color-surface);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+    </style>
+</head>
+<body class="saga-layout">
+    <main class="saga-main">
+        <div class="saga-content" style="padding: var(--space-xl);">
+            <!-- Header -->
+            <div class="communications-header">
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: var(--space-xs);">Comunicados</h1>
+                <p style="opacity: 0.9;">Fique por dentro das informações importantes da escola</p>
+            </div>
+
+            <!-- Estatísticas -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-lg); margin-bottom: var(--space-xl);">
+                <div class="saga-kpi-card">
+                    <div class="saga-kpi-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="saga-kpi-value" id="total-comms">0</div>
+                    <div class="saga-kpi-label">Total de Comunicados</div>
+                </div>
+                <div class="saga-kpi-card">
+                    <div class="saga-kpi-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                    </div>
+                    <div class="saga-kpi-value" id="urgent-comms">0</div>
+                    <div class="saga-kpi-label">Urgentes</div>
+                </div>
+                <div class="saga-kpi-card">
+                    <div class="saga-kpi-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22,4 12,14.01 9,11.01"/>
+                        </svg>
+                    </div>
+                    <div class="saga-kpi-value" id="read-comms">0</div>
+                    <div class="saga-kpi-label">Lidos</div>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filter-section">
+                <button class="filter-btn active" onclick="filterCommunications('all')">Todos</button>
+                <button class="filter-btn" onclick="filterCommunications('urgent')">Urgentes</button>
+                <button class="filter-btn" onclick="filterCommunications('unread')">Não Lidos</button>
+                <button class="filter-btn" onclick="filterCommunications('read')">Lidos</button>
+            </div>
+
+            <!-- Lista de Comunicados -->
+            <section class="saga-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg); padding-bottom: var(--space-md); border-bottom: 1px solid var(--color-border);">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--color-text-primary);">Comunicados Recentes</h2>
+                    <div class="saga-search">
+                        <svg class="saga-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <input type="text" class="saga-search-input" placeholder="Buscar comunicados..." id="search-input" onkeyup="searchCommunications()">
+                    </div>
+                </div>
+                
+                <div id="communications-container">
+                    <!-- Comunicados serão carregados via JavaScript -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Firebase & Components -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="../saga-components.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M",
+            authDomain: "saga-1d4e2.firebaseapp.com",
+            databaseURL: "https://saga-1d4e2-default-rtdb.firebaseio.com",
+            projectId: "saga-1d4e2",
+            storageBucket: "saga-1d4e2.firebasestorage.app",
+            messagingSenderId: "419315470764",
+            appId: "1:419315470764:web:4e3fd28ca21f935bc52a09",
+            measurementId: "G-SSBL21VWE3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let currentUser = null;
+        let communications = [];
+        let filteredCommunications = [];
+        let currentFilter = 'all';
+
+        function loadCommunications() {
+            if (!currentUser) {
+                communications = [
+                    {
+                        id: 'demo-1',
+                        titulo: 'Reunião de Pais',
+                        conteudo: 'Informamos que haverá reunião de pais na próxima sexta-feira, às 19h, no auditório da escola. Assuntos: rendimento escolar e próximas atividades.',
+                        prioridade: 'high',
+                        turma: 'Todas as turmas',
+                        dataEnvio: '2024-12-20T10:30:00',
+                        autor: 'Coordenação',
+                        lido: false
+                    },
+                    {
+                        id: 'demo-2',
+                        titulo: 'Material para Projeto',
+                        conteudo: 'Lembramos que os alunos devem trazer os materiais solicitados para o projeto de ciências até a próxima aula.',
+                        prioridade: 'medium',
+                        turma: '3º Ano A',
+                        dataEnvio: '2024-12-19T14:15:00',
+                        autor: 'Prof. João',
+                        lido: true
+                    },
+                    {
+                        id: 'demo-3',
+                        titulo: 'Alteração de Horário',
+                        conteudo: 'A aula de matemática de amanhã será transferida para a 3ª aula devido a compromissos da coordenação.',
+                        prioridade: 'low',
+                        turma: '3º Ano A',
+                        dataEnvio: '2024-12-18T16:45:00',
+                        autor: 'Prof. Silva',
+                        lido: true
+                    }
+                ];
+                processCommunications();
+                return;
+            }
+
+            db.ref('comunicados').once('value')
+                .then((snapshot) => {
+                    const firebaseComms = snapshot.val() || {};
+                    communications = Object.keys(firebaseComms).map(key => ({
+                        id: key,
+                        ...firebaseComms[key],
+                        lido: false // Por padrão, não lido
+                    })).sort((a, b) => new Date(b.dataEnvio || 0) - new Date(a.dataEnvio || 0));
+
+                    // Verificar comunicados lidos pelo usuário
+                    if (currentUser) {
+                        db.ref(`users/${currentUser.uid}/comunicadosLidos`).once('value')
+                            .then((snapshot) => {
+                                const lidos = snapshot.val() || {};
+                                const idsLidos = Object.keys(lidos);
+                                
+                                communications.forEach(comm => {
+                                    if (idsLidos.includes(comm.id)) {
+                                        comm.lido = true;
+                                    }
+                                });
+                                
+                                processCommunications();
+                            })
+                            .catch(() => processCommunications());
+                    } else {
+                        processCommunications();
+                    }
+                })
+                .catch(error => console.error('Erro ao carregar comunicados:', error));
+        }
+
+        function processCommunications() {
+            const urgent = communications.filter(c => c.prioridade === 'high');
+            const read = communications.filter(c => c.lido);
+
+            document.getElementById('total-comms').textContent = communications.length;
+            document.getElementById('urgent-comms').textContent = urgent.length;
+            document.getElementById('read-comms').textContent = read.length;
+
+            applyFilter();
+        }
+
+        function applyFilter() {
+            switch(currentFilter) {
+                case 'urgent':
+                    filteredCommunications = communications.filter(c => c.prioridade === 'high');
+                    break;
+                case 'unread':
+                    filteredCommunications = communications.filter(c => !c.lido);
+                    break;
+                case 'read':
+                    filteredCommunications = communications.filter(c => c.lido);
+                    break;
+                default:
+                    filteredCommunications = [...communications];
+            }
+
+            displayCommunications();
+        }
+
+        function displayCommunications() {
+            const container = document.getElementById('communications-container');
+            if (!container) return;
+
+            if (filteredCommunications.length === 0) {
+                container.innerHTML = `
+                    <div class="saga-empty-state">
+                        <div class="saga-empty-state-icon">📢</div>
+                        <div class="saga-empty-state-title">Nenhum comunicado encontrado</div>
+                        <div class="saga-empty-state-description">
+                            ${currentFilter === 'all' ? 'Não há comunicados disponíveis no momento.' : 'Não há comunicados para este filtro.'}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredCommunications.map(comm => `
+                <div class="comm-card ${!comm.lido ? 'unread' : ''}" onclick="markAsRead('${comm.id}')">
+                    <div class="comm-header">
+                        <div>
+                            <div class="comm-title">
+                                ${comm.titulo} 
+                                ${!comm.lido ? '<span style="color: var(--color-primary); font-size: 0.75rem; margin-left: var(--space-xs);">● NOVO</span>' : ''}
+                            </div>
+                            <div style="display: flex; gap: var(--space-sm); align-items: center; margin-top: var(--space-xs);">
+                                <div class="priority-badge priority-${comm.prioridade}">
+                                    ${getPriorityText(comm.prioridade)}
+                                </div>
+                                <span style="font-size: 0.875rem; color: var(--color-text-secondary);">
+                                    ${comm.turma || 'Todas as turmas'}
+                                </span>
+                            </div>
+                        </div>
+                        ${!comm.lido ? `
+                            <button class="saga-button small primary" onclick="event.stopPropagation(); markAsRead('${comm.id}')" title="Marcar como lido">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20,6 9,17 4,12"/>
+                                </svg>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="comm-content">${comm.conteudo}</div>
+                    <div class="comm-meta">
+                        <span>Por: ${comm.autor || 'Sistema'}</span>
+                        <span>${formatDateTime(comm.dataEnvio)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getPriorityText(priority) {
+            switch(priority) {
+                case 'high': return 'Urgente';
+                case 'medium': return 'Normal';
+                case 'low': return 'Baixa';
+                default: return 'Normal';
+            }
+        }
+
+        function formatDateTime(dateString) {
+            if (!dateString) return 'Data não disponível';
+            const date = new Date(dateString);
+            return date.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function filterCommunications(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            applyFilter();
+        }
+
+        function searchCommunications() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            if (searchTerm === '') {
+                applyFilter();
+                return;
+            }
+
+            filteredCommunications = communications.filter(comm => 
+                comm.titulo.toLowerCase().includes(searchTerm) ||
+                comm.conteudo.toLowerCase().includes(searchTerm) ||
+                (comm.autor && comm.autor.toLowerCase().includes(searchTerm))
+            );
+
+            displayCommunications();
+        }
+
+        function markAsRead(commId) {
+            const comm = communications.find(c => c.id === commId);
+            if (!comm || comm.lido) return;
+
+            if (!currentUser) {
+                // Para dados demo
+                comm.lido = true;
+                sagaComponents.showToast('Comunicado marcado como lido!', 'success');
+                processCommunications();
+                return;
+            }
+
+            db.ref(`users/${currentUser.uid}/comunicadosLidos/${commId}`).set({
+                lido: true,
+                dataLeitura: firebase.database.ServerValue.TIMESTAMP
+            })
+            .then(() => {
+                comm.lido = true;
+                sagaComponents.showToast('Comunicado marcado como lido!', 'success');
+                processCommunications();
+            })
+            .catch(error => sagaComponents.showToast('Erro ao marcar como lido', 'error'));
+        }
+
+        auth.onAuthStateChanged((user) => {
+            currentUser = user;
+            if (user) {
+                loadCommunications();
+            } else {
+                window.location.href = '../login.html';
+            }
+        });
+
+        window.logout = function() {
+            if (confirm('Deseja realmente sair?')) {
+                auth.signOut().then(() => window.location.href = '../login.html');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', loadCommunications);
+    </script>
+</body>
+</html>

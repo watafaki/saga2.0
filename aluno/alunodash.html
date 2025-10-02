@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard | S.A.G.A.</title>
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SAGA Design System -->
+    <link rel="stylesheet" href="../saga-design-system.css">
+    <link rel="stylesheet" href="../saga-additional-styles.css">
+
+    <style>
+        /* === Variáveis de Design === */
+        :root {
+            --font-main: 'Inter', sans-serif;
+            --transition-speed: 0.3s;
+        }
+
+        [data-theme='dark'] {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --surface-color: #2a2a2a;
+            --border-color: #3a3a3a;
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0a0a0;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --highlight-color: #ffffff;
+            --accent-color: #4a6fa5;
+            --accent-hover: #5d84c0;
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --error-color: #dc3545;
+        }
+
+        [data-theme='light'] {
+            --bg-primary: #f5f5f7;
+            --bg-secondary: #ffffff;
+            --surface-color: #ffffff;
+            --border-color: #e5e5e5;
+            --text-primary: #1d1d1f;
+            --text-secondary: #6e6e73;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --highlight-color: #000000;
+            --accent-color: #3a5a8c;
+            --accent-hover: #4a6fa5;
+            --input-bg: rgba(0, 0, 0, 0.05);
+            --success-color: #218838;
+            --warning-color: #e0a800;
+            --error-color: #c82333;
+        }
+
+        /* === Estilos Globais === */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+        }
+
+        /* === Preloader === */
+        .preloader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .preloader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* === Layout Principal === */
+        main.saga-main {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* === Wrapper Central === */
+        .dashboard-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* === Título da Página === */
+        .page-title {
+            text-align: center;
+            margin: 2rem 0 3rem 0;
+        }
+        .page-title h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .page-title p { font-size: 1.1rem; color: var(--text-secondary); }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            margin-bottom: 2rem; padding: 0.5rem 1rem;
+            background: var(--surface-color); color: var(--text-primary);
+            border-radius: 8px; text-decoration: none; cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-speed) ease;
+        }
+        .back-btn:hover { background: var(--border-color); }
+        
+        /* === Dashboard === */
+        .dashboard-header {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            gap: 1rem; margin-bottom: 2rem;
+        }
+        .dashboard-header h2 { font-size: 1.8rem; }
+        .period-selector button {
+            padding: 0.5rem 1.2rem; border: 1px solid var(--border-color);
+            border-radius: 20px; background: transparent; color: var(--text-secondary);
+            cursor: pointer; transition: all var(--transition-speed) ease; font-weight: 500;
+        }
+        .period-selector { display: flex; gap: 0.75rem; justify-content: center; align-items: center; }
+        .period-selector button.active {
+            background: var(--accent-color); color: white; border-color: var(--accent-color);
+        }
+        .stats-grid { max-width: 900px; margin: 0 auto; }
+        .dashboard-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .dashboard-card:nth-child(1) { animation-delay: 0.1s; }
+        .dashboard-card:nth-child(2) { animation-delay: 0.2s; }
+
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        .card-header, .saga-card-header {
+            display: flex; align-items: center; gap: 0.75rem;
+            font-size: 1.5rem; margin-bottom: 1.5rem; font-weight: 600;
+        }
+        .card-header .icon, .saga-card-header .icon { color: var(--accent-color); }
+
+        /* Gráfico */
+        .performance-chart { height: 300px; margin-bottom: 1.5rem; }
+        .chart-legend { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; }
+        .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
+        .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+
+        /* Estatísticas */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        .stat-item {
+            background: var(--surface-color); border-radius: 12px;
+            padding: 1.5rem; text-align: center;
+            transition: transform var(--transition-speed) ease;
+            border-bottom: 3px solid transparent;
+        }
+        .stat-item:hover { transform: translateY(-5px); }
+        .stat-item h4 { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 500; }
+        .stat-item p { font-size: 2.2rem; font-weight: 700; }
+        .stat-item.positive { border-color: var(--success-color); }
+        .stat-item.warning { border-color: var(--warning-color); }
+        
+        /* Sugestões */
+        .suggestion-item {
+            background: var(--input-bg); border-radius: 10px;
+            padding: 1.2rem; margin-bottom: 1rem;
+            border-left: 4px solid var(--accent-color);
+        }
+        .suggestion-item h4 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .suggestion-item p { font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); }
+
+        /* Progresso e Atividades */
+        .progress-item, .activity-item { margin-bottom: 1.5rem; }
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .progress-title { font-weight: 600; }
+        .progress-bar { height: 8px; background: var(--input-bg); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 4px; transition: width 1s ease-out; background: var(--accent-color); }
+        .progress-fill.success { background: var(--success-color); }
+        .progress-fill.warning { background: var(--warning-color); }
+
+        .activity-item { display: flex; align-items: center; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-icon {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--surface-color); color: var(--accent-color);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .activity-title { font-weight: 600; margin-bottom: 0.2rem; }
+        .activity-date { font-size: 0.8rem; color: var(--text-secondary); }
+        
+        /* === Responsividade === */
+        @media (max-width: 992px) { }
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .header-left h1 { display: none; }
+        }
+    </style>
+</head>
+<body class="saga-layout">
+    <div class="preloader">
+        <div class="spinner"></div>
+    </div>
+
+    <main class="saga-main">
+        <div class="dashboard-wrapper">
+            <a class="back-btn" onclick="window.location.href='alunoinicio.html'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/></svg>
+                Voltar ao Início
+            </a>
+            
+            <section class="page-title">
+                <h1 id="welcome-title">Carregando...</h1>
+                <p>Acompanhe seu desempenho e receba sugestões personalizadas.</p>
+            </section>
+
+            <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h2>Visão Geral do Desempenho</h2>
+                <div class="period-selector">
+                    <button class="saga-button ghost active" onclick="window.changePeriod('month')">Mês</button>
+                    <button class="saga-button ghost" onclick="window.changePeriod('trimester')">Trimestre</button>
+                    <button class="saga-button ghost" onclick="window.changePeriod('semester')">Semestre</button>
+                </div>
+            </div>
+            
+            <div class="saga-grid cols-2" style="max-width: 1200px; margin: 0 auto;">
+                <div class="saga-card dashboard-card">
+                    <div class="saga-card-header">
+                        <span class="icon">📊</span>
+                        <div>
+                            <div class="saga-card-title">Desempenho Acadêmico</div>
+                        </div>
+                    </div>
+                    
+                         <div class="performance-chart" style="max-width: 100%;">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-legend"></div>
+                    
+                    <div class="stats-grid" id="stats-grid-container"></div>
+                </div>
+                
+                <div class="saga-card dashboard-card">
+                    <div class="saga-card-header">
+                        <span class="icon">🎯</span>
+                        <div>
+                            <div class="saga-card-title">Progresso e Atividades</div>
+                        </div>
+                    </div>
+                    <div id="progress-container"></div>
+                    <br>
+                    <div class="saga-card-header">
+                        <span class="icon">💡</span>
+                        <div>
+                            <div class="saga-card-title">Sugestões de Melhoria</div>
+                        </div>
+                    </div>
+                    <div id="suggestions-container"></div>
+                    <br>
+                    <div class="saga-card-header">
+                        <span class="icon">🔔</span>
+                        <div>
+                            <div class="saga-card-title">Atividades Recentes</div>
+                        </div>
+                    </div>
+                    <div id="activities-container"></div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="../saga-components.js"></script>
+
+    <script>
+
+        // --- CONFIGURAÇÃO E INICIALIZAÇÃO ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M", // MANTENHA SUAS CHAVES REAIS AQUI
+            authDomain: "saga-1d4e2.firebaseapp.com",
+            databaseURL: "https://saga-1d4e2-default-rtdb.firebaseio.com",
+            projectId: "saga-1d4e2",
+            storageBucket: "saga-1d4e2.firebasestorage.app",
+            messagingSenderId: "419315470764",
+            appId: "1:419315470764:web:4e3fd28ca21f935bc52a09"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let performanceChart = null; // Variável global para o gráfico
+
+        // --- DADOS DE EXEMPLO (MOCK) ---
+        // Em um app real, esses dados viriam do Firebase
+        const mockUserData = {
+            nome: "Carlos Silva",
+            month: {
+                chartData: {
+                    labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+                    datasets: [
+                        { label: 'Suas Notas', data: [7.5, 8.0, 7.8, 8.5] },
+                        { label: 'Média da Turma', data: [7.0, 7.2, 7.5, 7.8] },
+                    ],
+                },
+                stats: {
+                    mediaGeral: '8.2', atividadesConcluidas: '12/15', prazoMedio: '2 dias', participacao: '85%',
+                }
+            },
+            trimester: {
+                chartData: {
+                    labels: ['Mês 1', 'Mês 2', 'Mês 3'],
+                    datasets: [
+                        { label: 'Suas Notas', data: [8.1, 7.9, 8.4] },
+                        { label: 'Média da Turma', data: [7.4, 7.5, 7.6] },
+                    ],
+                },
+                stats: {
+                    mediaGeral: '8.1', atividadesConcluidas: '35/40', prazoMedio: '3 dias', participacao: '88%',
+                }
+            },
+            semester: {
+                chartData: {
+                    labels: ['1º Bim', '2º Bim', '3º Bim'],
+                    datasets: [
+                        { label: 'Suas Notas', data: [7.8, 8.2, 8.0] },
+                        { label: 'Média da Turma', data: [7.2, 7.6, 7.5] },
+                    ],
+                },
+                stats: {
+                    mediaGeral: '8.0', atividadesConcluidas: '70/80', prazoMedio: '3 dias', participacao: '82%',
+                }
+            },
+            progress: [
+                { title: 'Matemática', value: 75, status: 'warning' },
+                { title: 'Português', value: 90, status: 'success' },
+                { title: 'Ciências', value: 60, status: 'warning' },
+                { title: 'História', value: 85, status: null },
+            ],
+            suggestions: [
+                { title: 'Foco em Ciências', content: 'Sua nota em Ciências está um pouco abaixo. Que tal revisar os últimos tópicos e fazer os exercícios extras?' },
+                { title: 'Antecipe as Entregas', content: 'Tente entregar as atividades com 1 ou 2 dias de antecedência para ter tempo de revisar com calma.' },
+            ],
+            activities: [
+                { icon: '📝', title: 'Entregou atividade de Matemática', date: 'Hoje, 14:30' },
+                { icon: '📚', title: 'Acessou material de Português', date: 'Ontem, 10:15' },
+                { icon: '💬', title: 'Participou do chat da comunidade', date: '2 dias atrás' },
+            ]
+        };
+
+        // --- AUTENTICAÇÃO ---
+        auth.onAuthStateChanged((user) => {
+            const preloader = document.querySelector('.preloader');
+            if (user) {
+                // Simula um tempo de carregamento para a animação ser visível
+                setTimeout(() => {
+                    // Sincroniza o nome do usuário autenticado (DB -> displayName -> fallback)
+                    const nameRef = db.ref(`users/${user.uid}/nome`);
+                    nameRef.on('value', (snapshot) => {
+                        const nome = snapshot.val() || user.displayName || 'Aluno';
+                        document.getElementById('welcome-title').textContent = `Boas-vindas, ${nome}!`;
+                        const headerName = document.getElementById('current-user-display');
+                        if (headerName) headerName.textContent = nome;
+                    });
+
+                    loadDashboardData(user.uid);
+                    preloader.classList.add('hidden');
+                }, 1000);
+            } else {
+                window.location.href = '../login.html';
+            }
+        });
+
+        window.logout = function() {
+            if (confirm('Deseja realmente sair?')) {
+                auth.signOut().then(() => {
+                    window.location.href = '../login.html';
+                });
+            }
+        };
+
+        // --- CARREGAMENTO DE DADOS DO DASHBOARD ---
+        function loadDashboardData(userId) {
+            // Aqui você buscaria os dados do Firebase. Usaremos o mock por enquanto.
+            // const userRef = ref(db, `users/${userId}`);
+            // onValue(userRef, (snapshot) => { const userData = snapshot.val(); ... });
+            
+            const userData = mockUserData; // Usando o mock para gráficos e estatísticas
+
+            renderStaticComponents(userData);
+            changePeriod('month', true); // Carrega os dados do primeiro período
+        }
+
+        // --- RENDERIZAÇÃO DOS COMPONENTES ---
+        function renderStaticComponents(data) {
+            const progressContainer = document.getElementById('progress-container');
+            const suggestionsContainer = document.getElementById('suggestions-container');
+            const activitiesContainer = document.getElementById('activities-container');
+            
+            progressContainer.innerHTML = data.progress.map(item => `
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <div class="progress-title">${item.title}</div>
+                        <div class="progress-value">${item.value}%</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill ${item.status || ''}" style="width: ${item.value}%"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            suggestionsContainer.innerHTML = data.suggestions.map(item => `
+                <div class="suggestion-item">
+                    <h4>${item.title}</h4>
+                    <p>${item.content}</p>
+                </div>
+            `).join('');
+
+            activitiesContainer.innerHTML = data.activities.map(item => `
+                <div class="activity-item">
+                    <div class="activity-icon">${item.icon}</div>
+                    <div>
+                        <div class="activity-title">${item.title}</div>
+                        <div class="activity-date">${item.date}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPeriodData(periodData) {
+            const { stats } = periodData;
+            const statsContainer = document.getElementById('stats-grid-container');
+            statsContainer.innerHTML = `
+                <div class="stat-item positive"><h4>Média Geral</h4><p>${stats.mediaGeral}</p></div>
+                <div class="stat-item"><h4>Atividades Concluídas</h4><p>${stats.atividadesConcluidas}</p></div>
+                <div class="stat-item warning"><h4>Prazo Médio</h4><p>${stats.prazoMedio}</p></div>
+                <div class="stat-item"><h4>Participação</h4><p>${stats.participacao}%</p></div>
+            `;
+            updateOrCreateChart(periodData.chartData);
+        }
+
+        // --- CONTROLE DO GRÁFICO ---
+        function updateOrCreateChart(chartData) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const theme = document.documentElement.getAttribute('data-theme');
+            const colors = {
+                accent: getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim(),
+                success: getComputedStyle(document.documentElement).getPropertyValue('--success-color').trim(),
+                grid: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                ticks: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim(),
+            };
+            
+            const datasets = [
+                {
+                    label: chartData.datasets[0].label, data: chartData.datasets[0].data,
+                    borderColor: colors.accent, backgroundColor: 'transparent', tension: 0.4, borderWidth: 3
+                },
+                {
+                    label: chartData.datasets[1].label, data: chartData.datasets[1].data,
+                    borderColor: colors.success, backgroundColor: 'transparent', tension: 0.4, borderDash: [5, 5], borderWidth: 2
+                }
+            ];
+
+            // Renderiza a legenda customizada
+            const legendContainer = document.querySelector('.chart-legend');
+            legendContainer.innerHTML = datasets.map(ds => `
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: ${ds.borderColor};"></div>
+                    <span>${ds.label}</span>
+                </div>
+            `).join('');
+            
+            if (performanceChart) {
+                performanceChart.data.labels = chartData.labels;
+                performanceChart.data.datasets.forEach((d, i) => {
+                    d.data = datasets[i].data;
+                    d.borderColor = datasets[i].borderColor;
+                });
+                performanceChart.options.scales.y.grid.color = colors.grid;
+                performanceChart.options.scales.x.grid.color = colors.grid;
+                performanceChart.options.scales.y.ticks.color = colors.ticks;
+                performanceChart.options.scales.x.ticks.color = colors.ticks;
+                performanceChart.update();
+            } else {
+                performanceChart = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: chartData.labels, datasets: datasets },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: false, grid: { color: colors.grid }, ticks: { color: colors.ticks } },
+                            x: { grid: { color: colors.grid }, ticks: { color: colors.ticks } }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // --- INTEGRAÇÃO TEMA COM SAGA COMPONENTS ---
+        const observeTheme = new MutationObserver(() => {
+            if (performanceChart) {
+                const currentPeriod = document.querySelector('.period-selector button.active').onclick.toString().match(/'([^']+)'/)[1];
+                updateOrCreateChart(mockUserData[currentPeriod].chartData);
+            }
+        });
+        observeTheme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+        // --- MUDANÇA DE PERÍODO ---
+        window.changePeriod = function(period, isInitialLoad = false) {
+            document.querySelectorAll('.period-selector button').forEach(button => button.classList.remove('active'));
+            document.querySelector(`.period-selector button[onclick="window.changePeriod('${period}')"]`).classList.add('active');
+            
+            const periodData = mockUserData[period];
+            renderPeriodData(periodData);
+        }
+
+    </script>
+</body>
+</html>

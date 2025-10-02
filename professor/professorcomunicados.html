@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Comunicados | Professor | Saga</title>
+  <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Novo Sistema de Design SAGA -->
+    <link rel="stylesheet" href="../saga-design-system.css">
+    <link rel="stylesheet" href="../saga-additional-styles.css">
+
+    <style>
+        .communications-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+        }
+        
+        .comm-form-section {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .comm-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            transition: all 0.2s ease;
+        }
+        
+        .comm-card:hover {
+            border-color: var(--color-success);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .comm-header {
+      display: flex;
+      justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+        }
+        
+        .comm-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .comm-content {
+            color: var(--color-text-secondary);
+      line-height: 1.6;
+            margin-bottom: var(--space-md);
+    }
+
+        .comm-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--color-border);
+            font-size: 0.875rem;
+            color: var(--color-text-tertiary);
+        }
+        
+        .priority-badge {
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .priority-high {
+            background: var(--color-error-light);
+            color: var(--color-error);
+        }
+        
+        .priority-medium {
+            background: var(--color-warning-light);
+            color: var(--color-warning);
+        }
+        
+        .priority-low {
+            background: var(--color-info-light);
+            color: var(--color-info);
+        }
+        
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .stat-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+      text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-success);
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+            margin-top: var(--space-xs);
+    }
+  </style>
+</head>
+<body class="saga-layout">
+    <main class="saga-main">
+        <div class="saga-content" style="padding: var(--space-xl);">
+            <!-- Header -->
+            <div class="communications-header">
+                <div>
+                    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: var(--space-xs);">Comunicados</h1>
+                    <p style="opacity: 0.9;">Envie comunicados importantes para suas turmas</p>
+    </div>
+                <button class="saga-button primary large" onclick="openCreateCommModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Novo Comunicado
+                </button>
+      </div>
+      
+            <!-- Estatísticas -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-comms">0</div>
+                    <div class="stat-label">Total Enviados</div>
+      </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="this-week-comms">0</div>
+                    <div class="stat-label">Esta Semana</div>
+          </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="urgent-comms">0</div>
+                    <div class="stat-label">Urgentes</div>
+          </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="reach-percentage">0%</div>
+                    <div class="stat-label">Taxa de Alcance</div>
+          </div>
+      </div>
+      
+            <!-- Lista de Comunicados -->
+            <section class="saga-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg); padding-bottom: var(--space-md); border-bottom: 1px solid var(--color-border);">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--color-text-primary); display: flex; align-items: center; gap: var(--space-sm);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        Seus Comunicados
+                    </h2>
+        </div>
+        
+                <div id="communications-container">
+                    <!-- Comunicados serão carregados via JavaScript -->
+          </div>
+            </section>
+    </div>
+  </main>
+
+    <!-- Firebase & Components -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="../saga-components.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M",
+      authDomain: "saga-1d4e2.firebaseapp.com",
+            databaseURL: "https://saga-1d4e2-default-rtdb.firebaseio.com",
+      projectId: "saga-1d4e2",
+      storageBucket: "saga-1d4e2.firebasestorage.app",
+      messagingSenderId: "419315470764",
+      appId: "1:419315470764:web:4e3fd28ca21f935bc52a09",
+      measurementId: "G-SSBL21VWE3"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+        let currentUser = null;
+        let communications = [];
+
+        function loadCommunications() {
+            if (!currentUser) {
+                communications = [
+                    {
+                        id: 'demo-1',
+                        titulo: 'Reunião de Pais',
+                        conteudo: 'Informamos que haverá reunião de pais na próxima sexta-feira, às 19h, no auditório da escola. Assuntos: rendimento escolar e próximas atividades.',
+                        prioridade: 'high',
+                        turma: 'Todas as turmas',
+                        dataEnvio: '2024-12-20T10:30:00',
+                        autor: 'Professor Demo'
+                    },
+                    {
+                        id: 'demo-2',
+                        titulo: 'Material para Projeto',
+                        conteudo: 'Lembramos que os alunos devem trazer os materiais solicitados para o projeto de ciências até a próxima aula.',
+                        prioridade: 'medium',
+                        turma: '3º Ano A',
+                        dataEnvio: '2024-12-19T14:15:00',
+                        autor: 'Professor Demo'
+                    },
+                    {
+                        id: 'demo-3',
+                        titulo: 'Alteração de Horário',
+                        conteudo: 'A aula de matemática de amanhã será transferida para a 3ª aula devido a compromissos da coordenação.',
+                        prioridade: 'low',
+                        turma: '3º Ano B',
+                        dataEnvio: '2024-12-18T16:45:00',
+                        autor: 'Professor Demo'
+                    }
+                ];
+                processCommunications();
+          return;
+        }
+        
+            db.ref('comunicados').once('value')
+                .then((snapshot) => {
+                    const firebaseComms = snapshot.val() || {};
+                    communications = Object.keys(firebaseComms)
+                        .filter(key => firebaseComms[key].professorId === currentUser.uid || firebaseComms[key].autor === currentUser.email?.split('@')[0])
+                        .map(key => ({
+                            id: key,
+                            ...firebaseComms[key]
+                        }))
+                        .sort((a, b) => new Date(b.dataEnvio || 0) - new Date(a.dataEnvio || 0));
+                    processCommunications();
+                })
+                .catch(error => console.error('Erro ao carregar comunicados:', error));
+        }
+
+        function processCommunications() {
+            // Calcular estatísticas
+            const thisWeek = getThisWeekStart();
+            const thisWeekComms = communications.filter(c => new Date(c.dataEnvio) >= thisWeek);
+            const urgentComms = communications.filter(c => c.prioridade === 'high');
+
+            document.getElementById('total-comms').textContent = communications.length;
+            document.getElementById('this-week-comms').textContent = thisWeekComms.length;
+            document.getElementById('urgent-comms').textContent = urgentComms.length;
+            document.getElementById('reach-percentage').textContent = '95%'; // Placeholder
+
+            displayCommunications();
+        }
+
+        function displayCommunications() {
+            const container = document.getElementById('communications-container');
+            if (!container) return;
+
+            if (communications.length === 0) {
+                container.innerHTML = `
+                    <div class="saga-empty-state">
+                        <div class="saga-empty-state-icon">📢</div>
+                        <div class="saga-empty-state-title">Nenhum comunicado enviado</div>
+                        <div class="saga-empty-state-description">Crie seu primeiro comunicado clicando no botão acima.</div>
+              </div>
+            `;
+            return;
+          }
+          
+            container.innerHTML = communications.map(comm => `
+                <div class="comm-card">
+                    <div class="comm-header">
+                        <div>
+                            <div class="comm-title">${comm.titulo}</div>
+                            <div style="display: flex; gap: var(--space-sm); align-items: center;">
+                                <div class="priority-badge priority-${comm.prioridade}">
+                                    ${getPriorityText(comm.prioridade)}
+                                </div>
+                                <span style="font-size: 0.875rem; color: var(--color-text-secondary);">
+                                    ${comm.turma || 'Todas as turmas'}
+                                </span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: var(--space-sm);">
+                            <button class="saga-button small ghost" onclick="editCommunication('${comm.id}')" title="Editar">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </button>
+                            <button class="saga-button small ghost" onclick="deleteCommunication('${comm.id}')" title="Excluir" style="color: var(--color-error);">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3,6 5,6 21,6"/>
+                                    <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="comm-content">${comm.conteudo}</div>
+                    <div class="comm-meta">
+                        <span>Enviado por: ${comm.autor || 'Sistema'}</span>
+                        <span>${formatDateTime(comm.dataEnvio)}</span>
+              </div>
+                </div>
+            `).join('');
+        }
+
+        function getPriorityText(priority) {
+            switch(priority) {
+                case 'high': return 'Urgente';
+                case 'medium': return 'Normal';
+                case 'low': return 'Baixa';
+                default: return 'Normal';
+            }
+        }
+
+        function formatDateTime(dateString) {
+            if (!dateString) return 'Data não disponível';
+            const date = new Date(dateString);
+            return date.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function getThisWeekStart() {
+            const now = new Date();
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            weekStart.setHours(0, 0, 0, 0);
+            return weekStart;
+        }
+
+        function openCreateCommModal() {
+            const modal = sagaComponents.createModal(
+                'Novo Comunicado',
+                `
+                <form class="saga-form">
+                    <div class="saga-form-group">
+                        <label class="saga-form-label required">Título do Comunicado</label>
+                        <input type="text" id="comm-title" class="saga-form-input" required>
+                    </div>
+                    <div class="saga-form-group">
+                        <label class="saga-form-label required">Conteúdo</label>
+                        <textarea id="comm-content" class="saga-form-textarea" rows="6" placeholder="Digite o conteúdo do comunicado..." required></textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+                        <div class="saga-form-group">
+                            <label class="saga-form-label">Prioridade</label>
+                            <select id="comm-priority" class="saga-form-select">
+                                <option value="low">Baixa</option>
+                                <option value="medium" selected>Normal</option>
+                                <option value="high">Urgente</option>
+                            </select>
+                        </div>
+                        <div class="saga-form-group">
+                            <label class="saga-form-label">Turma</label>
+                            <select id="comm-class" class="saga-form-select">
+                                <option value="Todas as turmas">Todas as turmas</option>
+                                <option value="3º Ano A">3º Ano A</option>
+                                <option value="3º Ano B">3º Ano B</option>
+                                <option value="2º Ano A">2º Ano A</option>
+                                <option value="2º Ano B">2º Ano B</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+                `,
+                [
+                    { text: 'Cancelar', type: 'secondary', onclick: 'this.closest(".saga-modal-backdrop").remove()' },
+                    { text: 'Enviar Comunicado', type: 'primary', onclick: 'submitCreateCommunication()' }
+                ]
+            );
+        }
+
+        function submitCreateCommunication() {
+            const title = document.getElementById('comm-title').value;
+            const content = document.getElementById('comm-content').value;
+            const priority = document.getElementById('comm-priority').value;
+            const classRoom = document.getElementById('comm-class').value;
+
+            if (!title || !content) {
+                sagaComponents.showToast('Preencha todos os campos obrigatórios', 'warning');
+                return;
+            }
+
+            if (!currentUser) {
+                sagaComponents.showToast('Você precisa estar logado', 'warning');
+                return;
+            }
+
+            const newCommunication = {
+                titulo: title,
+                conteudo: content,
+                prioridade: priority,
+                turma: classRoom,
+                professorId: currentUser.uid,
+                autor: currentUser.email?.split('@')[0] || 'Professor',
+                dataEnvio: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            db.ref('comunicados').push(newCommunication)
+                .then(() => {
+                    sagaComponents.showToast('Comunicado enviado com sucesso!', 'success');
+                    document.querySelector('.saga-modal-backdrop').remove();
+                    loadCommunications();
+                })
+                .catch(error => sagaComponents.showToast('Erro ao enviar comunicado', 'error'));
+        }
+
+        function editCommunication(commId) {
+            sagaComponents.showToast('Funcionalidade de edição em desenvolvimento', 'info');
+        }
+
+        function deleteCommunication(commId) {
+            if (!confirm('Tem certeza que deseja excluir este comunicado?')) return;
+
+            if (!currentUser) {
+                sagaComponents.showToast('Você precisa estar logado', 'warning');
+                return;
+            }
+
+            db.ref(`comunicados/${commId}`).remove()
+          .then(() => {
+                    sagaComponents.showToast('Comunicado excluído com sucesso!', 'success');
+                    loadCommunications();
+                })
+                .catch(error => sagaComponents.showToast('Erro ao excluir comunicado', 'error'));
+        }
+
+        auth.onAuthStateChanged((user) => {
+            currentUser = user;
+            if (user) {
+                loadCommunications();
+      } else {
+                window.location.href = '../login.html';
+            }
+        });
+
+        window.logout = function() {
+            if (confirm('Deseja realmente sair?')) {
+                auth.signOut().then(() => window.location.href = '../login.html');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', loadCommunications);
+  </script>
+</body>
+</html>

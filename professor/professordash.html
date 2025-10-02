@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard | Professor | Saga</title>
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Novo Sistema de Design SAGA -->
+    <link rel="stylesheet" href="../saga-design-system.css">
+    <link rel="stylesheet" href="../saga-additional-styles.css">
+
+    <style>
+        /* Estilos específicos da página do professor */
+        .professor-welcome {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-xxl);
+            margin-bottom: var(--space-xl);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .professor-welcome::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+        
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .analytics-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            transition: all 0.2s ease;
+        }
+        
+        .analytics-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .analytics-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--color-success-light);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-success);
+        }
+        
+        .analytics-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .analytics-info p {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+            margin: 0;
+        }
+        
+        .quick-actions-professor {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--space-lg);
+        }
+        
+        .action-card-professor {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-decoration: none;
+            color: var(--color-text-primary);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .action-card-professor:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--color-success);
+        }
+        
+        .action-icon-professor {
+            width: 48px;
+            height: 48px;
+            background: var(--color-success-light);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-success);
+        }
+        
+        .action-info h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .action-info p {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+        }
+        
+        .recent-activities-professor {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+    </style>
+</head>
+<body class="saga-layout">
+    <!-- O sistema de componentes criará automaticamente a sidebar e header -->
+    
+    <main class="saga-main">
+        <div class="saga-content" style="padding: var(--space-xl);">
+            <!-- Seção de Boas-vindas Professor -->
+            <section class="professor-welcome">
+                <div class="welcome-content">
+                    <h1 class="welcome-title" id="welcome-title">Bem-vindo, Professor!</h1>
+                    <p class="welcome-subtitle">Gerencie suas turmas e acompanhe o progresso dos alunos</p>
+                    <div class="welcome-date" id="current-date"></div>
+                </div>
+            </section>
+
+            <!-- Analytics do Professor -->
+            <section class="analytics-grid">
+                <div class="analytics-card">
+                    <div class="analytics-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                    </div>
+                    <div class="analytics-info">
+                        <h3 id="created-activities-value">0</h3>
+                        <p>Atividades Criadas</p>
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <div class="analytics-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="analytics-info">
+                        <h3 id="sent-comms-value">0</h3>
+                        <p>Comunicados Enviados</p>
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <div class="analytics-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <div class="analytics-info">
+                        <h3 id="active-students-value">0</h3>
+                        <p>Alunos Ativos</p>
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <div class="analytics-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88"/>
+                        </svg>
+                    </div>
+                    <div class="analytics-info">
+                        <h3 id="delivery-rate-value">0%</h3>
+                        <p>Taxa de Entrega</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Grid com Ações Rápidas e Atividades Recentes -->
+            <div class="saga-grid cols-2" style="margin-bottom: var(--space-xl);">
+                <!-- Ações Rápidas do Professor -->
+                <section>
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
+                            </svg>
+                            Ações Rápidas
+                        </h2>
+                    </div>
+                    <div class="quick-actions-professor">
+                        <a href="professoratividades.html" class="action-card-professor">
+                            <div class="action-icon-professor">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
+                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                    <polyline points="10,9 9,9 8,9"/>
+                                </svg>
+                            </div>
+                            <div class="action-info">
+                                <h3>Gerenciar Atividades</h3>
+                                <p>Criar e acompanhar tarefas</p>
+                            </div>
+                        </a>
+
+                        <a href="professorcomunicados.html" class="action-card-professor">
+                            <div class="action-icon-professor">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </div>
+                            <div class="action-info">
+                                <h3>Enviar Comunicado</h3>
+                                <p>Comunicar com a turma</p>
+                            </div>
+                        </a>
+
+                        <button class="action-card-professor" onclick="createNewActivity()" style="border: none; cursor: pointer;">
+                            <div class="action-icon-professor">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"/>
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                            </div>
+                            <div class="action-info">
+                                <h3>Nova Atividade</h3>
+                                <p>Criar tarefa rapidamente</p>
+                            </div>
+                        </button>
+
+                        <button class="action-card-professor" onclick="viewStudentProgress()" style="border: none; cursor: pointer;">
+                            <div class="action-icon-professor">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="20" x2="18" y2="10"/>
+                                    <line x1="12" y1="20" x2="12" y2="4"/>
+                                    <line x1="6" y1="20" x2="6" y2="14"/>
+                                </svg>
+                            </div>
+                            <div class="action-info">
+                                <h3>Progresso dos Alunos</h3>
+                                <p>Acompanhar desempenho</p>
+                            </div>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Resumo de Atividades Recentes -->
+                <section class="recent-activities-professor">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12,6 12,12 16,14"/>
+                            </svg>
+                            Atividade Recente
+                        </h2>
+                    </div>
+                    <div id="recent-activity-summary">
+                        <!-- Conteúdo será carregado via JavaScript -->
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    
+    <!-- Sistema de Componentes SAGA -->
+    <script src="../saga-components.js"></script>
+
+    <script>
+        // Configuração Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M",
+            authDomain: "saga-1d4e2.firebaseapp.com",
+            databaseURL: "https://saga-1d4e2-default-rtdb.firebaseio.com",
+            projectId: "saga-1d4e2",
+            storageBucket: "saga-1d4e2.firebasestorage.app",
+            messagingSenderId: "419315470764",
+            appId: "1:419315470764:web:4e3fd28ca21f935bc52a09",
+            measurementId: "G-SSBL21VWE3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let currentUser = null;
+
+        // Função principal para carregar dados do dashboard
+        function loadProfessorDashboard() {
+            updateCurrentDate();
+            loadDashboardStats();
+            loadRecentActivitySummary();
+            updateWelcomeMessage();
+        }
+
+        function updateCurrentDate() {
+            const agora = new Date();
+            const dataFormatada = agora.toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            updateElement('current-date', dataFormatada);
+        }
+
+        function updateWelcomeMessage() {
+            if (currentUser && currentUser.email) {
+                const professorName = currentUser.email.split('@')[0];
+                updateElement('welcome-title', `Bem-vindo, Prof. ${professorName}!`);
+            }
+        }
+
+        function loadDashboardStats() {
+            if (!currentUser) {
+                // Dados de demonstração se não estiver logado
+                updateElement('created-activities-value', '8');
+                updateElement('sent-comms-value', '15');
+                updateElement('active-students-value', '42');
+                updateElement('delivery-rate-value', '87%');
+                return;
+            }
+
+            // Carregar atividades criadas pelo professor
+            db.ref('atividades').once('value')
+                .then((snapshot) => {
+                    const atividades = snapshot.val() || {};
+                    const minhasAtividades = Object.values(atividades).filter(ativ =>
+                        ativ.professorId === currentUser.uid
+                    );
+                    updateElement('created-activities-value', minhasAtividades.length);
+                })
+                .catch(() => updateElement('created-activities-value', '0'));
+
+            // Carregar comunicados enviados
+            db.ref('comunicados').once('value')
+                .then((snapshot) => {
+                    const comunicados = snapshot.val() || {};
+                    const meusComunicados = Object.values(comunicados).filter(comm =>
+                        comm.autor === currentUser.email.split('@')[0] || 
+                        comm.professorId === currentUser.uid
+                    );
+                    updateElement('sent-comms-value', meusComunicados.length);
+                })
+                .catch(() => updateElement('sent-comms-value', '0'));
+
+            // Carregar dados de alunos ativos
+            loadActiveStudents();
+            calculateDeliveryRate();
+        }
+
+        function loadActiveStudents() {
+            db.ref('users').once('value')
+                .then((snapshot) => {
+                    const usuarios = snapshot.val() || {};
+                    let alunosAtivos = 0;
+
+                    Object.values(usuarios).forEach(usuario => {
+                        if (usuario.atividadesConcluidas && Object.keys(usuario.atividadesConcluidas).length > 0) {
+                            alunosAtivos++;
+                        }
+                    });
+
+                    updateElement('active-students-value', alunosAtivos);
+                })
+                .catch(() => updateElement('active-students-value', '0'));
+        }
+
+        function calculateDeliveryRate() {
+            if (!currentUser) return;
+
+            db.ref('atividades').once('value')
+                .then((snapshot) => {
+                    const atividades = snapshot.val() || {};
+                    const minhasAtividades = Object.values(atividades).filter(ativ =>
+                        ativ.professorId === currentUser.uid
+                    );
+
+                    if (minhasAtividades.length === 0) {
+                        updateElement('delivery-rate-value', '0%');
+                        return;
+                    }
+
+                    db.ref('users').once('value')
+                        .then((snapshot) => {
+                            const usuarios = snapshot.val() || {};
+                            const alunosQueConcluiram = new Set();
+
+                            Object.values(usuarios).forEach(usuario => {
+                                if (usuario.atividadesConcluidas) {
+                                    Object.keys(usuario.atividadesConcluidas).forEach(atividadeId => {
+                                        const atividade = minhasAtividades.find(a => a.id === atividadeId);
+                                        if (atividade) {
+                                            alunosQueConcluiram.add(usuario.uid || usuario.email);
+                                        }
+                                    });
+                                }
+                            });
+
+                            const totalAlunos = Object.keys(usuarios).length;
+                            const taxaEntrega = totalAlunos > 0 ? 
+                                Math.round((alunosQueConcluiram.size / totalAlunos) * 100) : 0;
+                            
+                            updateElement('delivery-rate-value', `${Math.min(taxaEntrega, 100)}%`);
+                        })
+                        .catch(() => updateElement('delivery-rate-value', '0%'));
+                })
+                .catch(() => updateElement('delivery-rate-value', '0%'));
+        }
+
+        function loadRecentActivitySummary() {
+            const container = document.getElementById('recent-activity-summary');
+            if (!container) return;
+
+            if (!currentUser) {
+                container.innerHTML = `
+                    <div class="saga-empty-state">
+                        <div class="saga-empty-state-icon">📊</div>
+                        <div class="saga-empty-state-title">Dashboard do Professor</div>
+                        <div class="saga-empty-state-description">Faça login para ver estatísticas detalhadas das suas turmas.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Buscar atividades recentes criadas pelo professor
+            db.ref('atividades').once('value')
+                .then((snapshot) => {
+                    const atividades = snapshot.val() || {};
+                    const minhasAtividades = Object.values(atividades)
+                        .filter(ativ => ativ.professorId === currentUser.uid)
+                        .sort((a, b) => new Date(b.dataCriacao || 0) - new Date(a.dataCriacao || 0))
+                        .slice(0, 3);
+
+                    if (minhasAtividades.length === 0) {
+                        container.innerHTML = `
+                            <div class="saga-empty-state">
+                                <div class="saga-empty-state-icon">📝</div>
+                                <div class="saga-empty-state-title">Nenhuma atividade</div>
+                                <div class="saga-empty-state-description">Crie sua primeira atividade para começar.</div>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    container.innerHTML = `
+                        <div style="display: flex; flex-direction: column; gap: var(--space-md);">
+                            ${minhasAtividades.map(atividade => `
+                                <div style="padding: var(--space-md); background: var(--color-surface-elevated); border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+                                    <h4 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary); margin-bottom: var(--space-xs);">${atividade.titulo}</h4>
+                                    <p style="font-size: 0.75rem; color: var(--color-text-secondary);">Prazo: ${formatDate(atividade.prazo)}</p>
+                                </div>
+                            `).join('')}
+                            <a href="professoratividades.html" class="saga-button ghost small" style="margin-top: var(--space-sm);">
+                                Ver todas as atividades
+                            </a>
+                        </div>
+                    `;
+                })
+                .catch(() => {
+                    container.innerHTML = `
+                        <div class="saga-empty-state">
+                            <div class="saga-empty-state-icon">⚠️</div>
+                            <div class="saga-empty-state-title">Erro ao carregar</div>
+                            <div class="saga-empty-state-description">Não foi possível carregar as atividades.</div>
+                        </div>
+                    `;
+                });
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Não definido';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        function updateElement(id, content) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = content;
+            }
+        }
+
+        // Funções das ações rápidas
+        function createNewActivity() {
+            const modal = sagaComponents.createModal(
+                'Nova Atividade',
+                `
+                <form id="new-activity-form" class="saga-form">
+                    <div class="saga-form-group">
+                        <label class="saga-form-label required">Título da Atividade</label>
+                        <input type="text" id="activity-title" class="saga-form-input" required>
+                    </div>
+                    <div class="saga-form-group">
+                        <label class="saga-form-label">Descrição</label>
+                        <textarea id="activity-description" class="saga-form-textarea"></textarea>
+                    </div>
+                    <div class="saga-form-group">
+                        <label class="saga-form-label required">Prazo</label>
+                        <input type="date" id="activity-deadline" class="saga-form-input" required>
+                    </div>
+                </form>
+                `,
+                [
+                    { text: 'Cancelar', type: 'secondary', onclick: 'this.closest(".saga-modal-backdrop").remove()' },
+                    { text: 'Criar Atividade', type: 'primary', onclick: 'submitNewActivity()' }
+                ]
+            );
+        }
+
+        function submitNewActivity() {
+            const title = document.getElementById('activity-title').value;
+            const description = document.getElementById('activity-description').value;
+            const deadline = document.getElementById('activity-deadline').value;
+
+            if (!title || !deadline) {
+                sagaComponents.showToast('Preencha todos os campos obrigatórios', 'warning');
+                return;
+            }
+
+            if (!currentUser) {
+                sagaComponents.showToast('Você precisa estar logado para criar atividades', 'warning');
+                return;
+            }
+
+            const novaAtividade = {
+                titulo: title,
+                descricao: description,
+                prazo: deadline,
+                professorId: currentUser.uid,
+                dataCriacao: firebase.database.ServerValue.TIMESTAMP,
+                turma: '3º Ano A'
+            };
+
+            db.ref('atividades').push(novaAtividade)
+                .then(() => {
+                    sagaComponents.showToast('Atividade criada com sucesso!', 'success');
+                    document.querySelector('.saga-modal-backdrop').remove();
+                    loadProfessorDashboard();
+                })
+                .catch((error) => {
+                    console.error('Erro ao criar atividade:', error);
+                    sagaComponents.showToast('Erro ao criar atividade', 'error');
+                });
+        }
+
+        function viewStudentProgress() {
+            sagaComponents.showToast('Funcionalidade em desenvolvimento', 'info');
+        }
+
+        // Inicialização quando o usuário estiver autenticado
+        auth.onAuthStateChanged((user) => {
+            currentUser = user;
+            if (user) {
+                loadProfessorDashboard();
+            } else {
+                window.location.href = '../login.html';
+            }
+        });
+
+        // Função global para logout (compatibilidade)
+        window.logout = function() {
+            if (confirm('Deseja realmente sair?')) {
+                auth.signOut().then(() => {
+                    window.location.href = '../login.html';
+                });
+            }
+        };
+
+        // Inicialização da página
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfessorDashboard();
+        });
+    </script>
+</body>
+</html>

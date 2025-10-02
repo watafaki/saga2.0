@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gerador de Exercícios | Aluno | Saga</title>
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Novo Sistema de Design SAGA -->
+    <link rel="stylesheet" href="../saga-design-system.css">
+    <link rel="stylesheet" href="../saga-additional-styles.css">
+    <style>
+        /* Estilos específicos da página */
+        .exercises-header {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        .exercises-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+        
+        .exercises-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .exercises-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .exercises-subtitle {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .generator-container {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xxl);
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .generator-form {
+            display: flex;
+            gap: var(--space-md);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .generator-input {
+            flex: 1;
+            padding: var(--space-md);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            background: var(--color-surface-elevated);
+            color: var(--color-text-primary);
+            font-size: 1rem;
+            font-family: var(--font-main);
+        }
+    
+    /* Estilos do Modal de Exercícios */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal-content {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-xl);
+        width: 90%;
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: var(--space-xxl);
+        position: relative;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        border-bottom: 2px solid var(--color-border);
+        padding-bottom: var(--space-md);
+    }
+    
+    .modal-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--color-text-primary);
+        margin: 0;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: var(--color-text-secondary);
+        transition: all 0.2s ease;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+    }
+    
+    .modal-close:hover {
+        background: var(--color-surface-elevated);
+        color: var(--color-text-primary);
+        transform: rotate(90deg);
+    }
+    
+    .modal-body .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 5px solid var(--color-border);
+        border-top-color: var(--color-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 3rem auto;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .exercise-item {
+        margin-bottom: var(--space-xxl);
+        padding: var(--space-lg);
+        background: var(--color-surface-elevated);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--color-border);
+    }
+    
+    .exercise-question {
+        font-weight: 600;
+        margin-bottom: var(--space-md);
+        font-size: 1.15rem;
+        color: var(--color-text-primary);
+        line-height: 1.6;
+    }
+    
+    .exercise-options {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+    
+    .option-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-md);
+        border-radius: var(--radius-md);
+        border: 2px solid var(--color-border);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: var(--color-surface);
+        color: var(--color-text-primary);
+    }
+    
+    .option-item:hover {
+        background: var(--color-surface-elevated);
+        border-color: var(--color-primary);
+        transform: translateX(5px);
+    }
+    
+    .option-item.selected {
+        background: var(--color-primary);
+        color: white;
+        border-color: var(--color-primary);
+        transform: translateX(5px);
+    }
+    
+    .option-item.correct {
+        background: #10b981;
+        color: white;
+        border-color: #10b981;
+        font-weight: 600;
+    }
+    
+    .option-item.incorrect {
+        background: #ef4444;
+        color: white;
+        border-color: #ef4444;
+    }
+    
+    .feedback-container {
+        display: none;
+        margin-top: var(--space-lg);
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .explanation {
+        padding: var(--space-md);
+        background: var(--color-surface);
+        border-radius: var(--radius-md);
+        border-left: 4px solid var(--color-primary);
+        margin-bottom: var(--space-md);
+        color: var(--color-text-primary);
+        line-height: 1.6;
+    }
+    
+    .youtube-suggestion {
+        padding: var(--space-md);
+        background: var(--color-surface);
+        border-radius: var(--radius-md);
+    }
+    
+    .youtube-suggestion h4 {
+        margin-bottom: var(--space-sm);
+        font-size: 1rem;
+        color: var(--color-text-primary);
+        font-weight: 600;
+    }
+    
+    .youtube-suggestion a {
+        display: inline-block;
+        margin-right: var(--space-md);
+        margin-bottom: var(--space-sm);
+        padding: var(--space-xs) var(--space-md);
+        background: var(--color-primary);
+        color: white;
+        text-decoration: none;
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+    
+    .youtube-suggestion a:hover {
+        background: var(--color-primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-footer {
+        margin-top: var(--space-xl);
+        padding-top: var(--space-lg);
+        border-top: 2px solid var(--color-border);
+        text-align: right;
+    }
+    
+    .generator-button {
+        padding: var(--space-md) var(--space-xl);
+        background: var(--color-primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .generator-button:hover:not(:disabled) {
+        background: var(--color-primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .generator-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    /* Animação do Header quando modal abre */
+    .saga-header {
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    }
+    
+    .saga-header.hidden-for-modal {
+        transform: translateY(-100%);
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    /* Ajuste no backdrop para cobrir tudo */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        animation: fadeInBackdrop 0.3s ease-out;
+    }
+    
+    .modal-backdrop.closing {
+        animation: fadeOutBackdrop 0.3s ease-out;
+    }
+    
+    @keyframes fadeInBackdrop {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeOutBackdrop {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+    
+    .modal-backdrop .modal-content {
+        animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .modal-backdrop.closing .modal-content {
+        animation: slideOut 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateY(30px) scale(0.95);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        to {
+            transform: translateY(30px) scale(0.95);
+            opacity: 0;
+        }
+    }
+    
+    /* Prevenir scroll quando modal aberto */
+    body.modal-open {
+        overflow: hidden;
+    }
+    
+    /* Melhorias visuais */
+    .modal-backdrop {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+  </style>
+</head>
+<body class="saga-layout">
+    <!-- O sistema de componentes criará automaticamente a sidebar e header -->
+    
+    <main class="saga-main">
+        <div class="saga-content" style="padding: var(--space-xl);">
+            <!-- Seção de Boas-vindas -->
+            <section class="exercises-header">
+                <div class="exercises-content">
+                    <h1 class="exercises-title">Gerador de Exercícios</h1>
+                    <p class="exercises-subtitle">Crie quizzes personalizados com inteligência artificial</p>
+                </div>
+            </section>
+
+            <!-- Gerador Container -->
+            <div class="generator-container">
+                <p style="color: var(--color-text-secondary); max-width: 600px; margin: 0 auto var(--space-lg) auto; line-height: 1.6;">
+                    Precisa praticar para uma prova? Digite qualquer assunto, matéria ou tópico abaixo e nossa inteligência artificial criará um quiz personalizado para você.
+                </p>
+                
+                <form class="generator-form" id="generator-form">
+                    <input type="text" class="generator-input" id="topic-input" placeholder="Ex: Revolução Francesa, Teorema de Pitágoras..." required>
+                    <button type="submit" class="saga-button primary" id="generate-btn">Gerar Quiz</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+  <div class="modal-backdrop" id="quiz-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Seu Quiz Personalizado</h2>
+        <button class="modal-close" id="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-footer" id="modal-footer"></div>
+    </div>
+  </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    
+    <!-- Sistema de Componentes SAGA -->
+    <script src="../saga-components.js"></script>
+  <script>
+    // Configuração Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M",
+        authDomain: "saga-1d4e2.firebaseapp.com",
+        databaseURL: "https://saga-1d4e2-default-rtdb.firebaseio.com",
+        projectId: "saga-1d4e2",
+        storageBucket: "saga-1d4e2.firebasestorage.app",
+        messagingSenderId: "419315470764",
+        appId: "1:419315470764:web:4e3fd28ca21f935bc52a09",
+        measurementId: "G-SSBL21VWE3"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Inicialização quando o usuário estiver autenticado
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            // Usuário logado
+        } else {
+            window.location.href = '../login.html';
+        }
+    });
+
+    // Inicialização da página
+    document.addEventListener('DOMContentLoaded', () => {
+        // O sistema de componentes já será inicializado automaticamente
+    });
+
+    // =========================================================
+    // LÓGICA DO GERADOR DE EXERCÍCIOS (COM EXTRAÇÃO DE JSON ROBUSTA)
+    // =========================================================
+    const generatorForm = document.getElementById('generator-form');
+    const generateBtn = document.getElementById('generate-btn');
+    const topicInput = document.getElementById('topic-input');
+    const modal = document.getElementById('quiz-modal');
+    const modalBody = document.getElementById('modal-body');
+    const modalFooter = document.getElementById('modal-footer');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const modalTitle = document.getElementById('modal-title');
+
+    const GEMINI_API_KEY = "AIzaSyDJjGdfyj-gKKMOoiCuwD9Lir-Diyvxp8I"; 
+    const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent`;
+    
+    let generatedQuestions = [];
+
+    const openModal = () => {
+        const header = document.querySelector('.saga-header');
+        
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+        
+        // Esconder header com animação
+        setTimeout(() => {
+            if (header) {
+                header.classList.add('hidden-for-modal');
+            }
+        }, 50);
+    };
+    
+    const closeModal = () => {
+        const header = document.querySelector('.saga-header');
+        
+        // Adicionar classe de fechamento para animação
+        modal.classList.add('closing');
+        
+        // Mostrar header com animação
+        if (header) {
+            header.classList.remove('hidden-for-modal');
+        }
+        
+        // Aguardar animações completarem
+        setTimeout(() => {
+            modal.style.display = 'none';
+            modal.classList.remove('closing');
+            document.body.classList.remove('modal-open');
+        }, 300);
+    };
+    
+    modalCloseBtn.addEventListener('click', closeModal);
+    
+    // Fechar com tecla ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            closeModal();
+        }
+    });
+    
+    // Fechar ao clicar fora do modal
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    generatorForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const topic = topicInput.value.trim();
+        if (!topic) return;
+
+        generateBtn.disabled = true;
+        generateBtn.textContent = 'Gerando...';
+        openModal();
+        modalTitle.textContent = `Quiz sobre: ${topic}`;
+        modalBody.innerHTML = '<div class="loading-spinner"></div>';
+        modalFooter.innerHTML = '';
+        
+        await generateExercises(topic);
+        
+        generateBtn.disabled = false;
+        generateBtn.textContent = 'Gerar Quiz';
+    });
+
+    async function generateExercises(topic) {
+        const prompt = `Você é um tutor acadêmico especializado. Crie exatamente 3 questões de múltipla escolha em português sobre "${topic}".
+
+FORMATO OBRIGATÓRIO - Retorne APENAS um array JSON válido, sem markdown, sem texto adicional:
+
+[
+  {
+    "pergunta": "A pergunta clara e objetiva?",
+    "opcoes": ["Opção A", "Opção B", "Opção C", "Opção D", "Opção E"],
+    "resposta": 0,
+    "explicacao": "Explicação detalhada da resposta correta.",
+    "youtubeSearchTerms": ["termo busca 1", "termo busca 2"]
+  }
+]
+
+REGRAS:
+- Cada questão tem 5 alternativas
+- "resposta" é o índice (0-4) da opção correta
+- Explicação deve ser clara e educativa
+- youtubeSearchTerms são termos de busca em português para vídeos educacionais
+- Retorne SOMENTE o JSON, sem \`\`\`json ou qualquer outro texto`;
+
+        try {
+            const response = await fetch(API_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': GEMINI_API_KEY
+                },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            
+            const data = await response.json();
+
+            if (!response.ok) {
+                const errorMessage = data?.error?.message || `Erro desconhecido. Status: ${response.status}`;
+                throw new Error(errorMessage);
+            }
+
+            if (!data.candidates || data.candidates.length === 0) {
+                 throw new Error("A resposta da IA foi bloqueada. Tente um tópico diferente.");
+            }
+
+            const responseText = data.candidates[0].content.parts[0].text;
+            
+            // ======================================================================
+            // MUDANÇA CRUCIAL: Extração robusta de JSON para evitar erros de formato
+            // ======================================================================
+            const startIndex = responseText.indexOf('[');
+            const endIndex = responseText.lastIndexOf(']');
+            
+            if (startIndex === -1 || endIndex === -1) {
+                throw new Error("A IA não retornou um formato de quiz válido (JSON não encontrado).");
+            }
+            
+            const jsonString = responseText.substring(startIndex, endIndex + 1);
+            // ======================================================================
+
+            generatedQuestions = JSON.parse(jsonString);
+            displayGeneratedQuestions(generatedQuestions);
+
+        } catch (error) {
+            console.error("DETALHES DO ERRO:", error);
+            modalBody.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+                    <h3 style="color: #ef4444; font-weight: bold; margin-bottom: 1rem; font-size: 1.5rem;">
+                        Erro ao Gerar Quiz
+                    </h3>
+                    <div style="background: var(--color-surface-elevated); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1rem; border-left: 4px solid #ef4444;">
+                        <p style="color: var(--color-text-primary); margin-bottom: 0.5rem;">
+                            <strong>Detalhes:</strong>
+                        </p>
+                        <p style="color: var(--color-text-secondary); font-family: monospace; font-size: 0.9rem;">
+                            ${error.message}
+                        </p>
+                    </div>
+                    <p style="color: var(--color-text-secondary); line-height: 1.6;">
+                        💡 <strong>Dicas:</strong><br>
+                        • Verifique sua conexão com a internet<br>
+                        • Tente um tópico mais específico<br>
+                        • Aguarde alguns segundos e tente novamente
+                    </p>
+                </div>
+            `;
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'generator-button';
+            closeBtn.textContent = 'Fechar';
+            closeBtn.onclick = closeModal;
+            modalFooter.innerHTML = '';
+            modalFooter.appendChild(closeBtn);
+        }
+    }
+    
+    // As funções displayGeneratedQuestions e checkAnswers continuam as mesmas...
+    function displayGeneratedQuestions(questions) {
+        modalBody.innerHTML = '';
+        questions.forEach((q, index) => {
+            const optionsHtml = q.opcoes.map((opt, optIndex) => `
+                <div class="option-item" data-question="${index}" data-option="${optIndex}">
+                    <strong>${String.fromCharCode(65 + optIndex)}.&nbsp;</strong> ${opt}
+                </div>
+            `).join('');
+            const youtubeLinksHtml = q.youtubeSearchTerms.map(term => `
+                <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(term)}" target="_blank">🎬 ${term}</a>
+            `).join('');
+            modalBody.innerHTML += `
+                <div class="exercise-item" id="q-${index}">
+                    <div class="exercise-question">${index + 1}. ${q.pergunta}</div>
+                    <div class="exercise-options">${optionsHtml}</div>
+                    <div class="feedback-container" id="feedback-${index}">
+                        <div class="explanation">${q.explicacao}</div>
+                        <div class="youtube-suggestion">
+                            <h4>Sugestões de estudo no YouTube:</h4>
+                            ${youtubeLinksHtml}
+                        </div>
+                    </div>
+                </div>`;
+        });
+        modalFooter.innerHTML = '<button class="generator-button" id="check-answers-btn">Verificar Respostas</button>';
+        document.querySelectorAll('.option-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const qIndex = item.dataset.question;
+                document.querySelectorAll(`.option-item[data-question="${qIndex}"]`).forEach(opt => opt.classList.remove('selected'));
+                item.classList.add('selected');
+            });
+        });
+        document.getElementById('check-answers-btn').addEventListener('click', checkAnswers);
+    }
+    
+    function checkAnswers() {
+        generatedQuestions.forEach((q, index) => {
+            const options = document.querySelectorAll(`.option-item[data-question="${index}"]`);
+            const selectedOption = document.querySelector(`.option-item[data-question="${index}"].selected`);
+            const feedbackContainer = document.getElementById(`feedback-${index}`);
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            if (selectedOption) {
+                const selectedAnswer = parseInt(selectedOption.dataset.option);
+                if (selectedAnswer === q.resposta) {
+                    selectedOption.classList.add('correct');
+                } else {
+                    selectedOption.classList.add('incorrect');
+                    options[q.resposta].classList.add('correct');
+                    feedbackContainer.style.display = 'block';
+                }
+            } else {
+                options[q.resposta].classList.add('correct');
+                feedbackContainer.style.display = 'block';
+            }
+        });
+        this.disabled = true;
+        this.textContent = 'Verificado!';
+    }
+  </script>
+</body>
+</html>

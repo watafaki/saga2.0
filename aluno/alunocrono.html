@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cronograma | S.A.G.A.</title>
+  <link rel="icon" type="image/png" href="../logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../universal-style.css">
+  <script src="../vinheta-animation.js"></script>
+  <script src="../custom-progress-bar.js"></script>
+  <script src="../sidebar-menu.js"></script>
+  <script src="../simple-menu.js"></script>
+  <script src="../auto-cleanup.js"></script>
+  <style>
+    /* === Design padrão do SAGA === */
+    :root { --font-main: 'Inter', sans-serif; }
+    [data-theme='dark'] { 
+      --bg-primary: #0a0a0a; --bg-secondary: #141414; --surface-color: #1a1a1a;
+      --border-color: #2e2e2e; --text-primary: #f0f0f0; --text-secondary: #a0a0a0;
+      --shadow-color: rgba(0, 0, 0, 0.5); --highlight-color: #ffffff;
+      --accent-color: #4a6fa5; --accent-hover: #5d84c0;
+      --event-color-1: #4a6fa5; --event-color-2: #6a5acd; --event-color-3: #20b2aa;
+      --event-color-4: #ff7f50; --event-color-5: #9370db;
+      --input-bg: rgba(255, 255, 255, 0.1);
+    }
+    [data-theme='light'] { 
+      --bg-primary: #f5f5f7; --bg-secondary: #ffffff; --surface-color: #ffffff;
+      --border-color: #e5e5e5; --text-primary: #1d1d1f; --text-secondary: #6e6e73;
+      --shadow-color: rgba(0, 0, 0, 0.1); --highlight-color: #000000;
+      --accent-color: #3a5a8c; --accent-hover: #4a6fa5;
+      --event-color-1: #3a5a8c; --event-color-2: #5a4aad; --event-color-3: #10a29a;
+      --event-color-4: #e06f40; --event-color-5: #8360cb;
+      --input-bg: rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      transition: background-color 0.5s ease;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    canvas#particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; padding-top: 6rem; }
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.5rem 2.5rem; border-bottom: 1px solid var(--border-color);
+      background: rgba(26, 26, 26, 0.8); backdrop-filter: blur(20px);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    [data-theme='light'] header {
+      background: rgba(255, 255, 255, 0.8);
+    }
+    .header-left { display: flex; align-items: center; gap: 1rem; }
+    .logo-wrapper {
+      display: flex; align-items: center; justify-content: center;
+      width: 48px; height: 48px; background: transparent; border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10); overflow: hidden;
+    }
+    .logo {
+      display: block; width: 48px; height: 48px; object-fit: contain;
+      background: transparent; border-radius: 50%; box-shadow: none; cursor: pointer;
+    }
+    .header-left h1 { font-size: 1.25rem; font-weight: 600; }
+    .user-controls { display: flex; align-items: center; gap: 0.5rem; }
+    .user-controls button {
+      background: var(--surface-color); border: 1px solid var(--border-color);
+      border-radius: 50%; width: 36px; height: 36px; font-size: 1.2rem;
+      cursor: pointer; color: var(--text-secondary); transition: all 0.2s ease;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .user-controls button:hover { border-color: var(--highlight-color); color: var(--highlight-color); }
+    .logout-btn { background: var(--text-secondary); color: var(--bg-primary); }
+    .logout-btn:hover { background: var(--highlight-color); }
+
+
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-title h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-title p {
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
+
+    .cronograma-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .cronograma-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent-color);
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--accent-color);
+      color: var(--text-color);
+    }
+
+    .btn-outline:hover {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .cronograma-grid {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 5px 15px var(--shadow);
+    }
+
+    .days-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .day-column {
+      padding: 0.5rem;
+      border-radius: 8px;
+      background: var(--card-bg);
+    }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+    }
+
+    .time-column {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .time-slot {
+      min-height: 60px;
+      padding: 0.5rem;
+      border-radius: 8px;
+      background: var(--card-bg);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .time-slot:hover {
+      background: var(--shadow);
+    }
+
+    .time-slot.has-event {
+      color: white;
+    }
+
+    .time-slot.color-1 {
+      background: var(--event-color-1);
+    }
+
+    .time-slot.color-2 {
+      background: var(--event-color-2);
+    }
+
+    .time-slot.color-3 {
+      background: var(--event-color-3);
+    }
+
+    .time-slot.color-4 {
+      background: var(--event-color-4);
+    }
+
+    .time-slot.color-5 {
+      background: var(--event-color-5);
+    }
+
+    .time-label {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-bottom: 0.2rem;
+    }
+
+    .event-title {
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .event-description {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--bg-color);
+      border-radius: 15px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 5px 15px var(--shadow);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-color);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: var(--text-color);
+      font-size: 1rem;
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .color-options {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .color-option {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.selected {
+      border: 2px solid white;
+      transform: scale(1.1);
+    }
+
+    .color-1 {
+      background: var(--event-color-1);
+    }
+
+    .color-2 {
+      background: var(--event-color-2);
+    }
+
+    .color-3 {
+      background: var(--event-color-3);
+    }
+
+    .color-4 {
+      background: var(--event-color-4);
+    }
+
+    .color-5 {
+      background: var(--event-color-5);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.5rem;
+    }
+
+    .share-modal .modal-content {
+      text-align: center;
+    }
+
+    .share-preview {
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      text-align: left;
+    }
+
+    .share-preview h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    .share-preview p {
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .share-preview .cronograma-mini {
+      font-size: 0.8rem;
+      margin-top: 1rem;
+      padding: 0.5rem;
+      background: var(--input-bg);
+      border-radius: 8px;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 1rem;
+      padding: 0.5rem 1rem;
+      background: var(--card-bg);
+      color: var(--text-color);
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .back-btn:hover {
+      background: var(--shadow);
+    }
+
+    @media (max-width: 768px) {
+      .page-title h1 {
+        font-size: 2rem;
+      }
+      
+      .cronograma-grid {
+        padding: 1rem;
+        overflow-x: auto;
+      }
+      
+      .days-header, .time-grid {
+        min-width: 700px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <span class="logo-wrapper">
+        <img src="logo.png" alt="Saga Logo" class="logo" onclick="window.location.href='alunoinicio.html'">
+      </span>
+      <h1>Saga Hub</h1>
+    </div>
+    <div class="user-controls">
+      <span id="username-display" style="color: var(--text-secondary); margin-right: 0.5rem; font-weight: 500;"></span>
+      <button id="theme-toggle-dark" title="Tema Escuro">🌙</button>
+      <button id="theme-toggle-light" title="Tema Claro">☀️</button>
+      <button class="logout-btn" onclick="logout()">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <a class="back-btn" onclick="if(window.navigateWithVinheta){window.navigateWithVinheta('alunoinicio.html');}else{window.location.href='alunoinicio.html';}">← Voltar ao Início</a>
+    
+    <section class="page-title">
+      <h1>Cronograma de Estudos</h1>
+      <p>Organize sua rotina e compartilhe com seus colegas</p>
+    </section>
+
+    <div class="cronograma-container">
+      <div class="cronograma-actions">
+        <div>
+          <button class="btn" onclick="openNewEventModal()">Adicionar Atividade</button>
+          <button class="btn btn-outline" onclick="clearCronograma()">Limpar Cronograma</button>
+        </div>
+        <button class="btn" onclick="openShareModal()">Compartilhar no Chat</button>
+      </div>
+      
+      <div class="cronograma-grid">
+        <div class="days-header">
+          <div class="day-column">Segunda</div>
+          <div class="day-column">Terça</div>
+          <div class="day-column">Quarta</div>
+          <div class="day-column">Quinta</div>
+          <div class="day-column">Sexta</div>
+          <div class="day-column">Sábado</div>
+          <div class="day-column">Domingo</div>
+        </div>
+        
+        <div class="time-grid" id="time-grid">
+          <!-- As colunas de tempo serão geradas dinamicamente -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal para adicionar/editar evento -->
+  <div class="modal" id="event-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">Adicionar Atividade</h2>
+        <button class="close-modal" onclick="closeModal('event-modal')">&times;</button>
+      </div>
+      
+      <form id="event-form">
+        <input type="hidden" id="event-day" value="">
+        <input type="hidden" id="event-time" value="">
+        <input type="hidden" id="event-id" value="">
+        
+        <div class="form-group">
+          <label for="event-title">Título</label>
+          <input type="text" id="event-title-input" required placeholder="Ex: Matemática">
+        </div>
+        
+        <div class="form-group">
+          <label for="event-description">Descrição (opcional)</label>
+          <textarea id="event-description-input" placeholder="Ex: Resolver exercícios de álgebra"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Cor</label>
+          <div class="color-options">
+            <div class="color-option color-1" data-color="1" onclick="selectColor(1)"></div>
+            <div class="color-option color-2" data-color="2" onclick="selectColor(2)"></div>
+            <div class="color-option color-3" data-color="3" onclick="selectColor(3)"></div>
+            <div class="color-option color-4" data-color="4" onclick="selectColor(4)"></div>
+            <div class="color-option color-5" data-color="5" onclick="selectColor(5)"></div>
+          </div>
+          <input type="hidden" id="event-color" value="1">
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" onclick="closeModal('event-modal')">Cancelar</button>
+          <button type="submit" class="btn">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para compartilhar cronograma -->
+  <div class="modal share-modal" id="share-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Compartilhar Cronograma</h2>
+        <button class="close-modal" onclick="closeModal('share-modal')">&times;</button>
+      </div>
+      
+      <p>Compartilhe seu cronograma de estudos com seus colegas no chat.</p>
+      
+      <div class="share-preview">
+        <h3>Prévia</h3>
+        <p>Olá pessoal! Compartilhando meu cronograma de estudos desta semana:</p>
+        <div class="cronograma-mini" id="share-preview-content">
+          <!-- Prévia do cronograma será gerada aqui -->
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="share-message">Mensagem personalizada (opcional)</label>
+        <textarea id="share-message" placeholder="Adicione uma mensagem personalizada..."></textarea>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('share-modal')">Cancelar</button>
+        <button type="button" class="btn" onclick="shareToChatAndClose()">Compartilhar no Chat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M",
+      authDomain: "saga-1d4e2.firebaseapp.com",
+      projectId: "saga-1d4e2",
+      storageBucket: "saga-1d4e2.firebasestorage.app",
+      messagingSenderId: "419315470764",
+      appId: "1:419315470764:web:4e3fd28ca21f935bc52a09",
+      measurementId: "G-SSBL21VWE3"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Variáveis globais
+    let currentUser = null;
+    let username = 'Aluno';
+    let cronogramaData = {};
+    const timeSlots = ['07:15', '08:00', '09:00', '10:00', '11:00', '12:35', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+    const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+    const dayNames = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+
+    // Verificar autenticação
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // Usuário está logado
+        currentUser = user;
+        username = user.email.split('@')[0];
+        document.getElementById('username-display').textContent = `Olá, ${username}`;
+        
+        // Carregar cronograma do usuário
+        loadCronograma();
+      } else {
+        // Usuário não está logado, redirecionar para login
+        window.location.href = '../login.html';
+      }
+    });
+
+    // Função de logout
+    function logout() {
+      auth.signOut()
+        .then(() => {
+          if (window.navigateWithVinheta) {
+            window.navigateWithVinheta('../login.html');
+          } else {
+            window.location.href = '../login.html';
+          }
+        })
+        .catch((error) => {
+          console.error('Erro ao fazer logout:', error);
+        });
+    }
+
+    // Inicializar grid de tempo
+    function initTimeGrid() {
+      const timeGrid = document.getElementById('time-grid');
+      timeGrid.innerHTML = '';
+      
+      days.forEach(day => {
+        const column = document.createElement('div');
+        column.className = 'time-column';
+        
+        timeSlots.forEach(time => {
+          const slot = document.createElement('div');
+          slot.className = 'time-slot';
+          slot.dataset.day = day;
+          slot.dataset.time = time;
+          
+          const timeLabel = document.createElement('div');
+          timeLabel.className = 'time-label';
+          timeLabel.textContent = time;
+          
+          slot.appendChild(timeLabel);
+          slot.addEventListener('click', () => openEventModal(day, time));
+          
+          column.appendChild(slot);
+        });
+        
+        timeGrid.appendChild(column);
+      });
+    }
+
+    // Carregar cronograma do usuário
+    function loadCronograma() {
+      if (!currentUser) return;
+      
+      initTimeGrid();
+      
+      db.ref(`cronogramas/${currentUser.uid}`).once('value')
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            cronogramaData = snapshot.val();
+            renderCronograma();
+          } else {
+            cronogramaData = {};
+          }
+        })
+        .catch((error) => {
+          console.error('Erro ao carregar cronograma:', error);
+          alert('Erro ao carregar cronograma. Tente novamente.');
+        });
+    }
+
+    // Renderizar cronograma na interface
+    function renderCronograma() {
+      // Limpar todos os slots primeiro
+      document.querySelectorAll('.time-slot').forEach(slot => {
+        slot.className = 'time-slot';
+        
+        // Manter apenas o label de tempo
+        const timeLabel = slot.querySelector('.time-label');
+        slot.innerHTML = '';
+        slot.appendChild(timeLabel);
+      });
+      
+      // Adicionar eventos aos slots
+      for (const eventId in cronogramaData) {
+        const event = cronogramaData[eventId];
+        const slot = document.querySelector(`.time-slot[data-day="${event.day}"][data-time="${event.time}"]`);
+        
+        if (slot) {
+          slot.className = `time-slot has-event color-${event.color}`;
+          
+          // Manter o label de tempo
+          const timeLabel = slot.querySelector('.time-label');
+          
+          // Adicionar título e descrição
+          const title = document.createElement('div');
+          title.className = 'event-title';
+          title.textContent = event.title;
+          
+          slot.innerHTML = '';
+          slot.appendChild(timeLabel);
+          slot.appendChild(title);
+          
+          if (event.description) {
+            const description = document.createElement('div');
+            description.className = 'event-description';
+            description.textContent = event.description;
+            slot.appendChild(description);
+          }
+          
+          // Adicionar ID do evento como atributo de dados
+          slot.dataset.eventId = eventId;
+        }
+      }
+    }
+
+    // Abrir modal para adicionar/editar evento
+    function openNewEventModal() {
+      openEventModal(days[0], timeSlots[0]);
+    }
+
+    // Abrir modal para adicionar/editar evento
+    function openEventModal(day, time, eventId = null) {
+      const modal = document.getElementById('event-modal');
+      const modalTitle = document.getElementById('modal-title');
+      const form = document.getElementById('event-form');
+      
+      document.getElementById('event-day').value = day;
+      document.getElementById('event-time').value = time;
+      document.getElementById('event-id').value = eventId || '';
+      
+      // Resetar formulário
+      form.reset();
+      
+      // Resetar seleção de cor
+      document.querySelectorAll('.color-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+      
+      if (eventId && cronogramaData[eventId]) {
+        // Editar evento existente
+        const event = cronogramaData[eventId];
+        modalTitle.textContent = 'Editar Atividade';
+        document.getElementById('event-title-input').value = event.title;
+        document.getElementById('event-description-input').value = event.description || '';
+        document.getElementById('event-color').value = event.color;
+        
+        // Selecionar cor
+        document.querySelector(`.color-option[data-color="${event.color}"]`).classList.add('selected');
+      } else {
+        // Novo evento
+        modalTitle.textContent = 'Adicionar Atividade';
+        document.getElementById('event-color').value = '1';
+        document.querySelector('.color-option[data-color="1"]').classList.add('selected');
+      }
+      
+      modal.style.display = 'flex';
+    }
+
+    // Selecionar cor para o evento
+    function selectColor(color) {
+      document.getElementById('event-color').value = color;
+      
+      document.querySelectorAll('.color-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+      
+      document.querySelector(`.color-option[data-color="${color}"]`).classList.add('selected');
+    }
+
+    // Fechar modal
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Salvar evento
+    document.getElementById('event-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const day = document.getElementById('event-day').value;
+      const time = document.getElementById('event-time').value;
+      const eventId = document.getElementById('event-id').value || `event_${Date.now()}`;
+      const title = document.getElementById('event-title-input').value;
+      const description = document.getElementById('event-description-input').value;
+      const color = document.getElementById('event-color').value;
+      
+      // Criar/atualizar evento
+      cronogramaData[eventId] = {
+        day,
+        time,
+        title,
+        description,
+        color
+      };
+      
+      // Salvar no Firebase
+      saveCronograma()
+        .then(() => {
+          renderCronograma();
+          closeModal('event-modal');
+        })
+        .catch((error) => {
+          console.error('Erro ao salvar evento:', error);
+          alert('Erro ao salvar evento. Tente novamente.');
+        });
+    });
+
+    // Salvar cronograma no Firebase
+    function saveCronograma() {
+      if (!currentUser) return Promise.reject('Usuário não autenticado');
+      
+      return db.ref(`cronogramas/${currentUser.uid}`).set(cronogramaData);
+    }
+
+    // Limpar cronograma
+    function clearCronograma() {
+      if (confirm('Tem certeza que deseja limpar todo o cronograma?')) {
+        cronogramaData = {};
+        
+        saveCronograma()
+          .then(() => {
+            renderCronograma();
+          })
+          .catch((error) => {
+            console.error('Erro ao limpar cronograma:', error);
+            alert('Erro ao limpar cronograma. Tente novamente.');
+          });
+      }
+    }
+
+    // Abrir modal de compartilhamento
+    function openShareModal() {
+      const modal = document.getElementById('share-modal');
+      const previewContent = document.getElementById('share-preview-content');
+      
+      // Gerar prévia do cronograma
+      let preview = '';
+      let hasEvents = false;
+      
+      days.forEach((day, index) => {
+        const dayEvents = Object.values(cronogramaData).filter(event => event.day === day);
+        
+        if (dayEvents.length > 0) {
+          hasEvents = true;
+          preview += `<strong>${dayNames[index]}:</strong><br>`;
+          
+          dayEvents.sort((a, b) => {
+            return timeSlots.indexOf(a.time) - timeSlots.indexOf(b.time);
+          }).forEach(event => {
+            preview += `- ${event.time} - ${event.title}<br>`;
+          });
+          
+          preview += '<br>';
+        }
+      });
+      
+      if (!hasEvents) {
+        preview = 'Nenhuma atividade adicionada ao cronograma.';
+      }
+      
+      previewContent.innerHTML = preview;
+      modal.style.display = 'flex';
+    }
+
+    // Compartilhar cronograma no chat
+    function shareToChatAndClose() {
+      const customMessage = document.getElementById('share-message').value;
+      const previewContent = document.getElementById('share-preview-content').innerHTML;
+      
+      // Criar mensagem para o chat
+      let message = `📅 <strong>Cronograma de ${username}</strong><br><br>`;
+      
+      if (customMessage) {
+        message += `${customMessage}<br><br>`;
+      } else {
+        message += `Olá pessoal! Compartilhando meu cronograma de estudos:<br><br>`;
+      }
+      
+      message += previewContent;
+      
+      // Enviar para o chat
+      if (currentUser) {
+        // Desabilitar botão durante o envio
+        const shareButton = document.querySelector('#share-modal .btn:not(.btn-outline)');
+        shareButton.disabled = true;
+        shareButton.textContent = 'Enviando...';
+        
+        db.ref('chats/geral/messages').push({
+          username: username,
+          text: message,
+          isHtml: true,
+          isCronograma: true,
+          timestamp: firebase.database.ServerValue.TIMESTAMP
+        })
+        .then(() => {
+          alert('Cronograma compartilhado com sucesso!');
+          closeModal('share-modal');
+          
+          // Perguntar se deseja ir para o chat
+          if (confirm('Deseja ir para o chat para ver seu cronograma compartilhado?')) {
+            window.location.href = 'alunochat.html';
+          }
+        })
+        .catch((error) => {
+          console.error('Erro ao compartilhar cronograma:', error);
+          alert('Erro ao compartilhar cronograma. Tente novamente.');
+        })
+        .finally(() => {
+          // Reabilitar botão
+          shareButton.disabled = false;
+          shareButton.textContent = 'Compartilhar no Chat';
+        });
+      } else {
+        alert('Você precisa estar logado para compartilhar seu cronograma.');
+      }
+    }
+
+    // Tema
+    // Sistema de tema padrão
+    const applyTheme = (theme) => {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('saga-theme', theme);
+    };
+    
+    document.getElementById('theme-toggle-dark').addEventListener('click', () => applyTheme('dark'));
+    document.getElementById('theme-toggle-light').addEventListener('click', () => applyTheme('light'));
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      applyTheme(localStorage.getItem('saga-theme') || 'dark');
+      initTimeGrid();
+    });
+
+    // Particles.js
+    function initParticles() {
+      const color = getComputedStyle(document.documentElement)
+        .getPropertyValue('--particle-color').trim();
+
+      particlesJS("particles-js", {
+        particles: {
+          number: { value: 60 },
+          color: { value: color },
+          opacity: { value: 0.5 },
+          shape: { type: "circle" },
+          size: { value: 3 },
+          line_linked: {
+            enable: true,
+            distance: 150,
+            color: color,
+            opacity: 0.4,
+            width: 1
+          },
+          move: {
+            enable: true,
+            speed: 2,
+            direction: "none",
+            out_mode: "out"
+          }
+        },
+        interactivity: {
+          detect_on: "canvas",
+          events: {
+            onhover: { enable: true, mode: "repulse" }
+          },
+          modes: {
+            repulse: { distance: 100, duration: 0.4 }
+          }
+        },
+        retina_detect: true
+      });
+    }
+
+    function updateParticles() {
+      if (window.pJSDom?.length) {
+        const color = getComputedStyle(document.documentElement)
+          .getPropertyValue('--particle-color').trim();
+        const pjs = window.pJSDom[0].pJS;
+        pjs.particles.color.value = color;
+        pjs.particles.line_linked.color = color;
+        pjs.fn.particlesRefresh();
+      }
+    }
+    
+    // Inicializar banco de dados se necessário
+    function initializeDatabase() {
+      // Verificar se o nó de mensagens existe
+      db.ref('chats/geral/messages').once('value')
+        .then((snapshot) => {
+          if (!snapshot.exists()) {
+            // Criar mensagem inicial
+            db.ref('chats/geral/messages').push({
+              username: 'Sistema',
+              text: 'Bem-vindo ao chat do S.A.G.A.! Este é o início da conversa.',
+              isSystem: true,
+              timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+          }
+        });
+    }
+    
+    // Chamar inicialização do banco de dados
+    initializeDatabase();
+  </script>
+
+  <!-- Particles.js -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+</body>
+</html>

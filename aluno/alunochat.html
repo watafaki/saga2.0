@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Chat | Aluno | Saga</title>
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Novo Sistema de Design SAGA -->
+    <link rel="stylesheet" href="../saga-design-system.css">
+    <link rel="stylesheet" href="../saga-additional-styles.css">
+    <style>
+        /* Estilos específicos da página */
+        .chat-header {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chat-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+        
+        .chat-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .chat-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .chat-subtitle {
+            font-size: 1.125rem;
+            opacity: 0.9;
+        }
+
+        .chat-container {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 2px solid var(--color-border);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin: 0;
+        }
+        
+        .chat-box {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            scroll-behavior: smooth;
+        }
+        
+        .message {
+            max-width: 75%;
+            padding: var(--space-md);
+            border-radius: var(--radius-lg);
+            line-height: 1.5;
+            position: relative;
+            animation: messageSlideIn 0.3s ease-out;
+            word-wrap: break-word;
+        }
+        
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .my-message {
+            align-self: flex-end;
+            background: var(--color-primary);
+            color: white;
+            border-bottom-right-radius: var(--radius-sm);
+        }
+        
+        .other-message {
+            align-self: flex-start;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            color: var(--color-text-primary);
+            border-bottom-left-radius: var(--radius-sm);
+        }
+        
+        .system-message {
+            align-self: center;
+            background: var(--color-surface-elevated);
+            border: 1px dashed var(--color-border);
+            font-style: italic;
+            text-align: center;
+            opacity: 0.7;
+            font-size: 0.875rem;
+            max-width: 90%;
+            color: var(--color-text-secondary);
+        }
+        
+        .username {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: var(--space-xs);
+            opacity: 0.9;
+        }
+        
+        .my-message .username {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .other-message .username {
+            color: var(--color-primary);
+        }
+        
+        .timestamp {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: var(--space-xs);
+        }
+        
+        .message-content {
+            word-break: break-word;
+        }
+        
+        .chat-input-container {
+            margin-top: var(--space-md);
+            padding-top: var(--space-md);
+            border-top: 2px solid var(--color-border);
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: var(--space-md);
+            align-items: center;
+        }
+        
+        .saga-input {
+            flex: 1;
+            padding: var(--space-md);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            background: var(--color-surface);
+            color: var(--color-text-primary);
+            font-size: 1rem;
+            font-family: var(--font-primary);
+            transition: all 0.2s ease;
+        }
+        
+        .saga-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-primary-light);
+        }
+        
+        .saga-input.error {
+            border-color: var(--color-error);
+        }
+        
+        .error-message {
+            color: var(--color-error);
+            font-size: 0.875rem;
+            margin-top: var(--space-xs);
+            min-height: 20px;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+        
+        .checking-message {
+            color: var(--color-primary);
+            font-size: 0.875rem;
+            margin-top: var(--space-xs);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+        
+        .checking-message::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--color-primary);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .success-message {
+            color: var(--color-success);
+            font-size: 0.875rem;
+            margin-top: var(--space-xs);
+        }
+        
+        .online-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-md);
+            background: var(--color-success-light);
+            color: var(--color-success);
+            border-radius: var(--radius-full);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .online-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--color-success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chat-title {
+                font-size: 2rem;
+            }
+            
+            .chat-box {
+                height: 500px;
+                padding: var(--space-md);
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                gap: var(--space-sm);
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body class="saga-layout">
+    <!-- O sistema de componentes criará automaticamente a sidebar e header -->
+    
+    <main class="saga-main">
+        <div class="saga-content" style="padding: var(--space-xl);">
+            <!-- Seção de Boas-vindas -->
+            <section class="chat-header">
+                <div class="chat-content">
+                    <h1 class="chat-title">Chat Global</h1>
+                    <p class="chat-subtitle">Converse com outros alunos e compartilhe conhecimentos</p>
+                </div>
+            </section>
+
+            <!-- Chat Container -->
+            <div class="chat-container">
+                <div class="section-header">
+                    <h2 class="section-title">💬 Chat da Comunidade</h2>
+                    <div class="online-badge" id="online-count">
+                        <span>0 online</span>
+                    </div>
+                </div>
+                
+                <div class="chat-box">
+                    <div class="chat-messages" id="chat-messages">
+                        <!-- As mensagens serão carregadas aqui -->
+                    </div>
+                    
+                    <div class="chat-input-container">
+                        <div class="chat-input">
+                            <input type="text" class="saga-input" id="message-input" placeholder="Digite sua mensagem..." autocomplete="off">
+                            <button class="saga-button primary" id="send-button">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                                <span>Enviar</span>
+                            </button>
+                        </div>
+                        <div class="error-message" id="error-message"></div>
+                    </div>
+                </div>
+                
+                <div class="saga-card" style="margin-top: var(--space-lg);">
+                    <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md);">
+                        <h3 style="margin: 0;">📋 Regras do Chat</h3>
+                        <span class="saga-badge success" style="font-size: 0.75rem;">🤖 Moderado por IA</span>
+                    </div>
+                    <ul style="padding-left: var(--space-lg); margin-bottom: var(--space-md); line-height: 1.8;">
+                        <li>Seja respeitoso com todos os participantes.</li>
+                        <li>Não use linguagem ofensiva ou palavrões.</li>
+                        <li>Não compartilhe informações pessoais.</li>
+                        <li>Mantenha as discussões relacionadas aos estudos.</li>
+                        <li>Evite bullying, discriminação ou assédio.</li>
+                    </ul>
+                    <div style="padding: var(--space-md); background: var(--color-primary-light); border-radius: var(--radius-md); border-left: 4px solid var(--color-primary);">
+                        <p style="color: var(--color-text-primary); margin: 0; font-size: 0.875rem; line-height: 1.6;">
+                            <strong>🛡️ Moderação Inteligente:</strong> Todas as mensagens são verificadas automaticamente por Inteligência Artificial antes de serem enviadas, garantindo um ambiente seguro e respeitoso para todos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    
+    <!-- Sistema de Componentes SAGA -->
+    <script src="../saga-components.js"></script>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M",
+      authDomain: "saga-1d4e2.firebaseapp.com",
+      databaseURL: "https://saga-1d4e2-default-rtdb.firebaseio.com",
+      projectId: "saga-1d4e2",
+      storageBucket: "saga-1d4e2.firebasestorage.app",
+      messagingSenderId: "419315470764",
+      appId: "1:419315470764:web:4e3fd28ca21f935bc52a09",
+      measurementId: "G-SSBL21VWE3"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Variáveis globais
+    let currentUser = null;
+    let username = 'Aluno';
+    let onlineUsers = 0;
+    
+    // API Gemini para moderação de conteúdo
+    const GEMINI_API_KEY = "AIzaSyDJjGdfyj-gKKMOoiCuwD9Lir-Diyvxp8I";
+    const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent`;
+    
+    // Lista de palavras proibidas
+    const palavroesProibidos = [
+      // Lista de palavrões em português
+      'merda', 'porra', 'caralho', 'foda', 'puta', 'buceta', 'cu', 'viado', 'bicha', 'piranha',
+      'cacete', 'cuzão', 'fdp', 'pqp', 'vsf', 'vtnc', 'bosta', 'desgraça', 'idiota', 'imbecil',
+      'retardado', 'otário', 'babaca', 'arrombado', 'corno', 'vagabundo', 'safado', 'putaria',
+      
+      // Variações com caracteres especiais
+      'm3rd4', 'p0rr4', 'c4r4lh0', 'f0d4', 'put4', 'buc3t4', 'v14d0', 'b1ch4', 'p1r4nh4',
+      'c4c3t3', 'cuz40', 'b0st4', 'd3sgr4c4', '1d10t4', '1mb3c1l', 'r3t4rd4d0', '0t4r10',
+      
+      // Palavras em inglês
+      'fuck', 'shit', 'bitch', 'asshole', 'dick', 'pussy', 'cunt', 'whore', 'slut', 'bastard',
+      'damn', 'idiot', 'moron', 'retard', 'stupid', 'dumb', 'loser', 'jerk'
+    ];
+    
+    // Expressões regulares para detectar palavrões
+    const palavraoRegex = new RegExp('\\b(' + palavroesProibidos.join('|') + ')\\b', 'gi');
+    
+    // Verificar autenticação
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // Usuário está logado
+        currentUser = user;
+        username = user.email.split('@')[0];
+        
+        // Inicializar chat
+        initChat();
+      } else {
+        // Usuário não está logado, redirecionar para login
+        window.location.href = '../login.html';
+      }
+    });
+
+    // Inicialização da página
+    document.addEventListener('DOMContentLoaded', () => {
+      // O sistema de componentes já será inicializado automaticamente
+    });
+
+    // Inicializar chat
+    function initChat() {
+      // Registrar presença online
+      registerOnlinePresence();
+      
+      // Carregar mensagens
+      loadMessages();
+      
+      // Configurar envio de mensagens
+      setupMessageSending();
+      
+      // Adicionar mensagem de boas-vindas ao sistema
+      addSystemMessage(`👋 Bem-vindo ao chat, ${username}!`);
+    }
+
+    // Registrar presença online
+    function registerOnlinePresence() {
+      if (!currentUser) return;
+      
+      // Referência para o status do usuário
+      const userStatusRef = db.ref(`status/${currentUser.uid}`);
+      
+      // Referência para conexão
+      const connectedRef = db.ref('.info/connected');
+      
+      // Monitorar estado de conexão
+      connectedRef.on('value', (snapshot) => {
+        if (snapshot.val() === true) {
+          // Usuário está conectado
+          
+          // Configurar para remover quando desconectar
+          userStatusRef.onDisconnect().remove();
+          
+          // Atualizar status
+          userStatusRef.set({
+            username: username,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+          });
+        }
+      });
+      
+      // Monitorar usuários online
+      db.ref('status').on('value', (snapshot) => {
+        if (snapshot.exists()) {
+          onlineUsers = Object.keys(snapshot.val()).length;
+        } else {
+          onlineUsers = 0;
+        }
+        
+        const onlineElement = document.getElementById('online-count');
+        if (onlineElement) {
+            onlineElement.querySelector('span').textContent = `${onlineUsers} online`;
+        }
+      });
+    }
+
+    // Função de logout
+    function logout() {
+      // Remover status online antes de sair
+      if (currentUser) {
+        db.ref(`status/${currentUser.uid}`).remove();
+      }
+      
+      auth.signOut()
+        .then(() => {
+          window.location.href = '../login.html';
+        })
+        .catch((error) => {
+          console.error('Erro ao fazer logout:', error);
+        });
+    }
+
+    // Limpar todas as mensagens do chat
+    function clearAllMessages() {
+      if (confirm('Tem certeza que deseja apagar todas as mensagens do chat? Esta ação não pode ser desfeita.')) {
+        db.ref('chats/geral/messages').remove()
+          .then(() => {
+            addSystemMessage('Todas as mensagens foram apagadas. Chat limpo!');
+            console.log('Todas as mensagens foram removidas do banco de dados');
+          })
+          .catch((error) => {
+            console.error('Erro ao limpar mensagens:', error);
+            addSystemMessage('Erro ao limpar mensagens. Tente novamente.');
+          });
+      }
+    }
+
+    // Função melhorada para filtrar palavrões
+    function filterMessage(message) {
+      let filteredMessage = message;
+      
+      // Aplicar regex de palavrões
+      filteredMessage = filteredMessage.replace(palavraoRegex, (match) => {
+        // Substituir por asteriscos baseado no tamanho da palavra
+        return '*'.repeat(match.length);
+      });
+      
+      // Detectar tentativas de contornar o filtro
+      const suspiciousPatterns = [
+        /\b[a-z]*[0-9][a-z]*\b/gi, // Palavras com números misturados
+        /\b[a-z]*[^a-z\s][a-z]*\b/gi, // Palavras com caracteres especiais
+        /\b[a-z]{1,3}\s+[a-z]{1,3}\s+[a-z]{1,3}\b/gi // Palavras muito curtas separadas
+      ];
+      
+      suspiciousPatterns.forEach(pattern => {
+        filteredMessage = filteredMessage.replace(pattern, (match) => {
+          const cleanMatch = match.toLowerCase().replace(/[^a-z]/g, '');
+          if (palavroesProibidos.some(palavrao => 
+            cleanMatch.includes(palavrao) || palavrao.includes(cleanMatch))) {
+            return '*'.repeat(match.length);
+          }
+          return match;
+        });
+      });
+      
+      return filteredMessage;
+    }
+
+    // Carregar mensagens
+    function loadMessages() {
+      const messagesContainer = document.getElementById('chat-messages');
+      
+      // Limpar mensagens existentes
+      messagesContainer.innerHTML = '';
+      
+      // Adicionar mensagem de carregamento
+      const loadingMessage = document.createElement('div');
+      loadingMessage.className = 'message system-message';
+      loadingMessage.textContent = 'Carregando mensagens...';
+      loadingMessage.id = 'loading-message';
+      messagesContainer.appendChild(loadingMessage);
+      
+      // Limitar a 50 mensagens mais recentes
+      db.ref('chats/geral/messages').limitToLast(50).once('value')
+        .then((snapshot) => {
+          // Remover mensagem de carregamento
+          const loadingMsg = document.getElementById('loading-message');
+          if (loadingMsg) loadingMsg.remove();
+          
+          // Verificar se há mensagens
+          if (!snapshot.exists()) {
+            addSystemMessage('Nenhuma mensagem ainda. Seja o primeiro a enviar! 🎉');
+            setupNewMessageListener();
+            return;
+          }
+          
+          // Processar mensagens
+          let newestTimestamp = 0;
+          snapshot.forEach((childSnapshot) => {
+            const message = childSnapshot.val();
+            const messageId = childSnapshot.key;
+            const messageElement = createMessageElement(message, messageId);
+            messagesContainer.appendChild(messageElement);
+            
+            // Rastrear timestamp mais recente
+            if (message.timestamp && message.timestamp > newestTimestamp) {
+              newestTimestamp = message.timestamp;
+            }
+          });
+          
+          // Atualizar timestamp para novas mensagens
+          if (newestTimestamp > 0) {
+            lastMessageTimestamp = newestTimestamp;
+          }
+          
+          // Rolar para a última mensagem
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+          
+          // Configurar listener para novas mensagens
+          setupNewMessageListener();
+        })
+        .catch((error) => {
+          console.error('Erro ao carregar mensagens:', error);
+          addSystemMessage('❌ Erro ao carregar mensagens. Tente novamente mais tarde.');
+        });
+    }
+    
+    // Configurar listener para novas mensagens
+    let lastMessageTimestamp = Date.now();
+    
+    function setupNewMessageListener() {
+      const messagesContainer = document.getElementById('chat-messages');
+      
+      // Listener para novas mensagens (após o carregamento inicial)
+      const messagesRef = db.ref('chats/geral/messages').orderByChild('timestamp').startAt(lastMessageTimestamp + 1);
+      
+      messagesRef.on('child_added', (snapshot) => {
+        const message = snapshot.val();
+        const messageId = snapshot.key;
+        
+        // Verificar se a mensagem já está no DOM
+        if (document.querySelector(`[data-message-id="${messageId}"]`)) {
+          return;
+        }
+        
+        // Criar e adicionar elemento
+        const messageElement = createMessageElement(message, messageId);
+        messagesContainer.appendChild(messageElement);
+        
+        // Atualizar último timestamp
+        if (message.timestamp > lastMessageTimestamp) {
+          lastMessageTimestamp = message.timestamp;
+        }
+        
+        // Rolar para a última mensagem com animação suave
+        setTimeout(() => {
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 100);
+      });
+    }
+
+    // Adicionar mensagem do sistema
+    function addSystemMessage(text) {
+      const messagesContainer = document.getElementById('chat-messages');
+      
+      const messageElement = document.createElement('div');
+      messageElement.className = 'message system-message';
+      messageElement.textContent = text;
+      
+      messagesContainer.appendChild(messageElement);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Criar elemento de mensagem
+    function createMessageElement(message, messageId) {
+      const messageElement = document.createElement('div');
+      if (messageId) {
+        messageElement.setAttribute('data-message-id', messageId);
+      }
+      
+      // Verificar se é uma mensagem do sistema
+      if (message.isSystem) {
+        messageElement.className = 'message system-message';
+        messageElement.textContent = message.text;
+        return messageElement;
+      }
+      
+      // Mensagem normal
+      const isMyMessage = message.username === username;
+      messageElement.className = `message ${isMyMessage ? 'my-message' : 'other-message'}`;
+      
+      // Username
+      const usernameElement = document.createElement('div');
+      usernameElement.className = 'username';
+      usernameElement.textContent = isMyMessage ? 'Você' : message.username;
+      
+      // Conteúdo da mensagem
+      const contentElement = document.createElement('div');
+      contentElement.className = 'message-content';
+      
+      // Filtrar mensagem antes de exibir
+      const filteredText = filterMessage(message.text || '');
+
+      // Verificar se é HTML ou texto simples
+      if (message.isHtml) {
+        contentElement.innerHTML = filteredText;
+      } else {
+        contentElement.textContent = filteredText;
+      }
+      
+      // Timestamp
+      const timestampElement = document.createElement('div');
+      timestampElement.className = 'timestamp';
+      timestampElement.textContent = formatTimestamp(message.timestamp);
+      
+      // Adicionar elementos ao container
+      messageElement.appendChild(usernameElement);
+      messageElement.appendChild(contentElement);
+      messageElement.appendChild(timestampElement);
+      
+      return messageElement;
+    }
+
+    // Formatar timestamp
+    function formatTimestamp(timestamp) {
+      if (!timestamp) return '';
+      
+      const date = new Date(timestamp);
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      
+      return `${hours}:${minutes}`;
+    }
+
+    // Configurar envio de mensagens
+    function setupMessageSending() {
+      const messageInput = document.getElementById('message-input');
+      const sendButton = document.getElementById('send-button');
+      const errorMessage = document.getElementById('error-message');
+      
+      // Função para enviar mensagem (agora com verificação IA)
+      async function sendMessage() {
+        const text = messageInput.value.trim();
+        
+        if (text === '') return;
+        
+        // Limpar mensagens anteriores
+        errorMessage.textContent = '';
+        errorMessage.className = 'error-message';
+        messageInput.classList.remove('error');
+        
+        // Desabilitar botão durante verificação e envio
+        sendButton.disabled = true;
+        const originalButtonText = sendButton.querySelector('span').textContent;
+        sendButton.querySelector('span').textContent = 'Verificando...';
+        
+        // Mostrar indicador de verificação
+        errorMessage.className = 'checking-message';
+        errorMessage.textContent = '🔍 Verificando mensagem com IA...';
+        
+        try {
+          // Verificar conteúdo com IA
+          const isOffensive = await checkOffensiveContent(text);
+          
+          if (isOffensive) {
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = '⚠️ Sua mensagem contém conteúdo inapropriado e não pode ser enviada.';
+            messageInput.classList.add('error');
+            sendButton.disabled = false;
+            sendButton.querySelector('span').textContent = originalButtonText;
+            
+            // Limpar erro após 5 segundos
+            setTimeout(() => {
+              errorMessage.textContent = '';
+              errorMessage.className = 'error-message';
+              messageInput.classList.remove('error');
+            }, 5000);
+            
+            return;
+          }
+          
+          // Mensagem aprovada - enviar para Firebase
+          errorMessage.className = 'checking-message';
+          errorMessage.textContent = '✅ Aprovado! Enviando...';
+          sendButton.querySelector('span').textContent = 'Enviando...';
+          
+          await db.ref('chats/geral/messages').push({
+            username: username,
+            text: text,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+          });
+          
+          // Sucesso
+          messageInput.value = '';
+          errorMessage.className = 'success-message';
+          errorMessage.textContent = '✓ Mensagem enviada!';
+          
+          setTimeout(() => {
+            errorMessage.textContent = '';
+            errorMessage.className = 'error-message';
+          }, 2000);
+          
+          sendButton.disabled = false;
+          sendButton.querySelector('span').textContent = originalButtonText;
+          
+        } catch (error) {
+          console.error('Erro ao enviar mensagem:', error);
+          errorMessage.className = 'error-message';
+          errorMessage.textContent = '❌ Erro ao enviar mensagem. Tente novamente.';
+          sendButton.disabled = false;
+          sendButton.querySelector('span').textContent = originalButtonText;
+          
+          setTimeout(() => {
+            errorMessage.textContent = '';
+          }, 3000);
+        }
+      }
+      
+      // Event listeners
+      sendButton.addEventListener('click', sendMessage);
+      
+      messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          sendMessage();
+        }
+      });
+    }
+
+    // Verificar conteúdo ofensivo com IA do Gemini
+    async function checkOffensiveContent(text) {
+      const prompt = `Você é um moderador de chat educacional. Analise a seguinte mensagem e determine se ela contém:
+- Palavrões ou linguagem vulgar
+- Insultos ou ofensas
+- Conteúdo inapropriado para ambiente escolar
+- Discriminação, preconceito ou bullying
+- Assédio ou intimidação
+
+Mensagem: "${text}"
+
+Responda APENAS com "APROVADO" se a mensagem for apropriada, ou "BLOQUEADO" se for inapropriada. Não adicione nenhuma explicação ou texto adicional.`;
+
+      try {
+        const response = await fetch(GEMINI_API_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': GEMINI_API_KEY
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: prompt
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.1,
+              maxOutputTokens: 10
+            }
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error('Erro na API Gemini:', data);
+          // Se houver erro na API, usa verificação básica como fallback
+          return containsPalavroesFallback(text);
+        }
+
+        if (!data.candidates || data.candidates.length === 0) {
+          console.warn('Resposta vazia do Gemini');
+          return containsPalavroesFallback(text);
+        }
+
+        const resultado = data.candidates[0].content.parts[0].text.trim().toUpperCase();
+        
+        console.log('🤖 IA Gemini - Resultado da moderação:', resultado);
+        
+        // Se contém "BLOQUEADO" ou similar, retorna true (é ofensivo)
+        return resultado.includes('BLOQUEADO');
+
+      } catch (error) {
+        console.error('Erro ao verificar conteúdo:', error);
+        // Em caso de erro, usa verificação básica como fallback
+        return containsPalavroesFallback(text);
+      }
+    }
+
+    // Verificação básica como fallback (verificação rápida local)
+    function containsPalavroesFallback(text) {
+      const lowerText = text.toLowerCase();
+      
+      // Verificar palavras exatas
+      if (palavraoRegex.test(lowerText)) {
+        return true;
+      }
+      
+      // Verificar palavras com caracteres repetidos
+      for (const palavrao of palavroesProibidos) {
+        const regexPattern = palavrao.split('').join('+');
+        const flexibleRegex = new RegExp(regexPattern, 'i');
+        
+        if (flexibleRegex.test(lowerText)) {
+          return true;
+        }
+      }
+      
+      return false;
+    }
+    
+    // Manter função antiga para compatibilidade (agora chama o fallback)
+    function containsPalavroes(text) {
+      return containsPalavroesFallback(text);
+    }
+
+    // Inicializar banco de dados se necessário
+    function initializeDatabase() {
+      // Verificar se o nó de mensagens existe
+      db.ref('chats/geral/messages').once('value')
+        .then((snapshot) => {
+          if (!snapshot.exists()) {
+            // Criar mensagem inicial
+            db.ref('chats/geral/messages').push({
+              username: 'Sistema',
+              text: '💬 Bem-vindo ao chat do S.A.G.A.! Este é o início da conversa.',
+              isSystem: true,
+              timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+          }
+        });
+    }
+    
+    // Chamar inicialização do banco de dados
+    initializeDatabase();
+  </script>
+</body>
+</html>

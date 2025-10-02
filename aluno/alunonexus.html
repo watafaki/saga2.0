@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nexus AI | S.A.G.A.</title>
+  <link rel="icon" type="image/png" href="../logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../universal-style.css">
+  <script src="../vinheta-animation.js"></script>
+  <script src="../custom-progress-bar.js"></script>
+  <script src="../modern-sidebar.js"></script>
+  <style>
+    /* === Design Aprimorado - SAGA Nexus AI === */
+    :root { 
+      --font-main: 'Inter', sans-serif; 
+      --transition-speed: 0.4s;
+    }
+
+    [data-theme='dark'] { 
+      --bg-primary: #0a0a0a; 
+      --bg-secondary: #141414; 
+      --surface-color: rgba(26, 26, 26, 0.6);
+      --border-color: rgba(255, 255, 255, 0.1); 
+      --border-hover-color: rgba(255, 255, 255, 0.25);
+      --text-primary: #f0f0f0; 
+      --text-secondary: #a0a0a0;
+      --shadow-color: rgba(0, 0, 0, 0.5); 
+      --glow-color: rgba(74, 111, 165, 0.3);
+      --highlight-color: #ffffff;
+      --accent-color: #4a6fa5; 
+      --accent-hover: #5d84c0;
+    }
+
+    [data-theme='light'] { 
+      --bg-primary: #f5f5f7; 
+      --bg-secondary: #ffffff; 
+      --surface-color: rgba(255, 255, 255, 0.6);
+      --border-color: rgba(0, 0, 0, 0.1); 
+      --border-hover-color: rgba(0, 0, 0, 0.25);
+      --text-primary: #1d1d1f; 
+      --text-secondary: #6e6e73;
+      --shadow-color: rgba(0, 0, 0, 0.1); 
+      --glow-color: rgba(58, 90, 140, 0.2);
+      --highlight-color: #000000;
+      --accent-color: #3a5a8c; 
+      --accent-hover: #4a6fa5;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-primary);
+      background-image: radial-gradient(circle at 50% 0%, var(--bg-secondary), var(--bg-primary) 70%);
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      transition: background-color 0.5s ease;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    canvas#particles-js { /* Presumindo que você use particles.js */
+      position: fixed; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: -1; pointer-events: none;
+    }
+
+    /* === Header Moderno === */
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border-color);
+      background: rgba(10, 10, 10, 0.5); 
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      transition: all var(--transition-speed) ease;
+    }
+    [data-theme='light'] header {
+      background: rgba(245, 245, 247, 0.5);
+    }
+    .logo { width: 36px; height: 36px; cursor: pointer; transition: transform 0.3s ease; }
+    .logo:hover { transform: scale(1.1) rotate(5deg); }
+    .header-left h1 { font-size: 1.05rem; font-weight: 600; }
+    .user-controls button {
+      background: transparent; border: 1px solid var(--border-color);
+      border-radius: 50%; width: 32px; height: 32px; font-size: 1rem;
+      cursor: pointer; color: var(--text-secondary); 
+      transition: all var(--transition-speed) ease;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .user-controls button:hover {
+      border-color: var(--highlight-color); 
+      color: var(--highlight-color);
+      transform: translateY(-2px);
+    }
+    .logout-btn { background: var(--text-secondary); color: var(--bg-primary); }
+    .logout-btn:hover { background: var(--highlight-color); }
+    
+    /* === Conteúdo Principal === */
+    main {
+      flex: 1;
+      padding: 8rem 2rem 2rem 2rem; /* Aumentado padding-top para não ficar atrás do header */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+    
+    .back-btn {
+      align-self: flex-start;
+      margin-left: calc((100% - 800px) / 2); /* Alinha com o card */
+      padding: 0.6rem 1.2rem;
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all var(--transition-speed) ease;
+    }
+    .back-btn:hover {
+      background: var(--bg-secondary);
+      border-color: var(--border-hover-color);
+      transform: translateX(-4px);
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .page-title h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(90deg, #a7b3c9, #ffffff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    [data-theme='light'] .page-title h1 {
+        background: linear-gradient(90deg, #3a5a8c, #1d1d1f);
+        -webkit-background-clip: text;
+    }
+    .page-title p {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+    }
+
+    .nexus-container {
+      max-width: 800px;
+      width: 100%;
+      perspective: 1000px; /* Adicionado para efeito 3D no hover */
+    }
+
+    /* === O Card da Nexus AI: Onde a Mágica Acontece === */
+    .nexus-card {
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 8px 32px 0 var(--shadow-color);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all var(--transition-speed) ease-in-out;
+      animation: breathingGlow 5s ease-in-out infinite;
+    }
+    .nexus-card:hover {
+        transform: rotateX(2deg) rotateY(-2deg) scale(1.02);
+        box-shadow: 0 16px 48px 0 var(--shadow-color);
+        border-color: var(--border-hover-color);
+    }
+
+    @keyframes breathingGlow {
+      0%, 100% { box-shadow: 0 8px 32px 0 var(--shadow-color), 0 0 15px var(--glow-color); }
+      50% { box-shadow: 0 8px 32px 0 var(--shadow-color), 0 0 30px var(--glow-color); }
+    }
+
+    .nexus-logo {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1rem auto;
+      border-radius: 20px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 15px var(--glow-color));
+    }
+
+    .nexus-card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    
+    .nexus-description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+    }
+
+    .coming-soon-notice {
+        background: rgba(0,0,0,0.2);
+        padding: 1rem;
+        border-radius: 12px;
+        color: var(--text-secondary);
+    }
+
+    .coming-soon-notice h3 {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .coming-soon-notice p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <span class="logo-wrapper">
+        <img src="logo.png" alt="Saga Logo" class="logo" onclick="window.location.href='alunoinicio.html'">
+      </span>
+      <h1>Saga Hub</h1>
+    </div>
+    <div class="user-controls">
+      <span id="username-display" style="color: var(--text-secondary); margin-right: 0.5rem; font-weight: 500;"></span>
+      <button id="theme-toggle-dark" title="Tema Escuro">🌙</button>
+      <button id="theme-toggle-light" title="Tema Claro">☀️</button>
+      <button class="logout-btn" onclick="logout()">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <a class="back-btn" onclick="window.location.href='alunoinicio.html'">← Voltar ao Início</a>
+    
+    <section class="page-title">
+      <h1>Nexus AI</h1>
+      <p>O futuro dos seus estudos começa aqui.</p>
+    </section>
+
+    <div class="nexus-container">
+      <div class="nexus-card">
+        <img src="nexus.png" alt="Nexus AI" class="nexus-logo">
+        <h2>Bem-vindo ao Futuro dos Estudos</h2>
+        <div class="nexus-description">
+          A Nexus é sua assistente de estudos com inteligência artificial, projetada para revolucionar sua forma de aprender.
+        </div>
+        
+        <div class="coming-soon-notice">
+            <h3>⚙️ Aprimorando a Experiência</h3>
+            <p>
+                Nossa equipe está finalizando os últimos detalhes para garantir que a Nexus AI ofereça a melhor ajuda possível. 
+                <br><strong>Fique atento, o lançamento será em breve!</strong>
+            </p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <script>
+    // Firebase Config (sem alterações)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M",
+      authDomain: "saga-1d4e2.firebaseapp.com",
+      projectId: "saga-1d4e2",
+      storageBucket: "saga-1d4e2.firebasestorage.app",
+      messagingSenderId: "419315470764",
+      appId: "1:419315470764:web:4e3fd28ca21f935bc52a09",
+      measurementId: "G-SSBL21VWE3"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Lógica de autenticação e tema (sem alterações)
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        const username = user.email.split('@')[0];
+        document.getElementById('username-display').textContent = `Olá, ${username}`;
+      } else {
+        window.location.href = '../login.html';
+      }
+    });
+
+    function logout() {
+      auth.signOut()
+        .then(() => {
+          window.location.href = '../login.html';
+        })
+        .catch((error) => {
+          console.error('Erro ao fazer logout:', error);
+        });
+    }
+
+    const applyTheme = (theme) => {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('saga-theme', theme);
+    };
+    
+    document.getElementById('theme-toggle-dark').addEventListener('click', () => applyTheme('dark'));
+    document.getElementById('theme-toggle-light').addEventListener('click', () => applyTheme('light'));
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      applyTheme(localStorage.getItem('saga-theme') || 'dark');
+    });
+  </script>
+</body>
+</html>
