@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Saga</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Novo Sistema de Design SAGA -->
+    <link rel="stylesheet" href="saga-design-system.css">
+    <link rel="stylesheet" href="saga-additional-styles.css">
+  <style>
+    :root { 
+        --font-main: 'Inter', sans-serif; 
+    }
+    [data-theme='dark'] {
+      --bg-primary: #0a0a0a; --bg-secondary: #141414; --surface-color: #1a1a1a;
+      --border-color: #2e2e2e; --text-primary: #f0f0f0; --text-secondary: #a0a0a0;
+      --shadow-color: rgba(0, 0, 0, 0.5); --highlight-color: #ffffff;
+    }
+    [data-theme='light'] {
+      --bg-primary: #f5f5f7; --bg-secondary: #ffffff; --surface-color: #ffffff;
+      --border-color: #e5e5e5; --text-primary: #1d1d1f; --text-secondary: #6e6e73;
+      --shadow-color: rgba(0, 0, 0, 0.1); --highlight-color: #000000;
+    }
+    
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+    body {
+      background-color: var(--bg-primary);
+      font-family: var(--font-main);
+      color: var(--text-primary);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.5s ease;
+    }
+
+    #auth-loader {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: var(--bg-primary); z-index: 10000;
+        display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;
+    }
+    .spinner {
+        width: 48px; height: 48px; border: 4px solid var(--border-color);
+        border-top-color: var(--highlight-color); border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #auth-loader p { font-weight: 500; color: var(--text-secondary); }
+    
+    .content-wrapper {
+        display: flex; flex-direction: column; width: 100%; height: 100%;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+    .content-wrapper.visible {
+        opacity: 1;
+    }
+
+    header {
+        position: absolute; top: 0; left: 0; width: 100%;
+        padding: 1.5rem 2.5rem; display: flex; justify-content: space-between;
+        align-items: center; z-index: 10;
+    }
+    .header-logo { display: flex; align-items: center; gap: 0.75rem; }
+    .header-logo img { height: 36px; }
+    .header-logo span { font-weight: 600; font-size: 1.25rem; }
+    .theme-toggle { display: flex; gap: 0.5rem; }
+    .theme-toggle button {
+        background: var(--surface-color); border: 1px solid var(--border-color);
+        border-radius: 50%; width: 36px; height: 36px; font-size: 1.2rem;
+        cursor: pointer; color: var(--text-secondary); transition: all 0.2s ease;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .theme-toggle button:hover { border-color: var(--highlight-color); color: var(--highlight-color); }
+    
+    .main-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        flex-grow: 1;
+        width: 100%;
+        min-height: calc(100vh - 80px);
+        position: relative;
+        z-index: 1;
+    }
+    .image-panel {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        position: relative; overflow: hidden;
+    }
+    
+    .login-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        z-index: 0;
+    }
+    .image-panel::before {
+        content: ''; 
+        position: absolute; 
+        top: 0; left: 0; 
+        width: 100%; height: 100%;
+        background: linear-gradient(135deg, 
+            rgba(10, 10, 10, 0.8) 0%, 
+            rgba(10, 10, 10, 0.4) 50%, 
+            rgba(10, 10, 10, 0.8) 100%);
+        z-index: 1;
+    }
+    .quote-container { position: relative; z-index: 2; padding: 2rem; text-align: center; }
+    .quote { font-size: 1.5rem; font-style: italic; max-width: 500px; color: var(--text-secondary); }
+    .quote-text {
+        font-weight: 500;
+        background: linear-gradient(120deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(200, 200, 200, 0.85) 30%,
+            #ffffff 50%,
+            rgba(200, 200, 200, 0.85) 70%,
+            rgba(255, 255, 255, 0.15) 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+        background-size: 300% 100%;
+        animation: shimmer 6s ease-in-out infinite;
+        text-shadow: 0 0 24px rgba(255, 255, 255, 0.08);
+    }
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        50% { background-position: 100% 0; }
+        100% { background-position: -200% 0; }
+    }
+    .quote footer { margin-top: 1rem; font-size: 1.1rem; font-style: normal; font-weight: 600; color: var(--text-primary); }
+    
+    .login-panel { 
+        display: flex; justify-content: center; align-items: center; 
+        padding: 3rem 2rem; background-color: var(--bg-primary);
+        min-height: 100%;
+    }
+    .login-card { 
+        width: 100%; max-width: 450px; 
+        background: rgba(26, 26, 26, 0.95); 
+        border: 1px solid rgba(255, 255, 255, 0.1); 
+        border-radius: 24px; 
+        box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(255, 255, 255, 0.05),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        padding: 3rem; 
+        backdrop-filter: blur(20px);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        position: relative;
+        overflow: hidden;
+    }
+    .login-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.1) 0%, 
+            rgba(255, 255, 255, 0.05) 50%, 
+            rgba(255, 255, 255, 0.02) 100%);
+        border-radius: 24px;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .login-card > * {
+        position: relative;
+        z-index: 2;
+    }
+    .login-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 
+            0 30px 80px rgba(0, 0, 0, 0.5),
+            0 0 0 1px rgba(255, 255, 255, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    .login-header { 
+        text-align: center; 
+        margin-bottom: 2.5rem; 
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .login-header h1 { 
+        font-size: 2.2rem; 
+        font-weight: 700; 
+        background: linear-gradient(135deg, #ffffff, #cccccc);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.5rem;
+    }
+    .login-header p { 
+        color: var(--text-secondary); 
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    .form-group { position: relative; margin-bottom: 1.25rem; }
+    .form-group svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-secondary); }
+    .form-input, .form-select { 
+        width: 100%; 
+        padding: 1.2rem 1rem 1.2rem 2.8rem; 
+        border: 2px solid rgba(255, 255, 255, 0.1); 
+        border-radius: 16px; 
+        background: rgba(0, 0, 0, 0.3); 
+        color: var(--text-primary); 
+        font-size: 1rem; 
+        font-family: var(--font-main);
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        backdrop-filter: blur(10px);
+    }
+    .form-input:focus, .form-select:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.3);
+        background: rgba(0, 0, 0, 0.4);
+        box-shadow: 
+            0 0 0 3px rgba(255, 255, 255, 0.1),
+            0 8px 25px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px);
+    }
+    .form-input::placeholder, .form-select option {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    .form-button { 
+        width: 100%; 
+        padding: 1.3rem 1rem; 
+        border-radius: 16px; 
+        font-size: 1.1rem; 
+        font-weight: 600; 
+        cursor: pointer; 
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+        background: linear-gradient(135deg, #ffffff, #e0e0e0); 
+        color: #000000; 
+        border: none; 
+        margin-top: 2rem;
+        position: relative; 
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+    .form-button::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: left 0.5s ease;
+    }
+    .form-button:hover::before {
+        left: 100%;
+    }
+    .form-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(135deg, #f8f8f8, #ffffff);
+    }
+    .form-button:active {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+    .form-button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .register-link { 
+        margin-top: 2rem; 
+        text-align: center; 
+        font-size: 0.95rem; 
+        color: var(--text-secondary);
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .register-link span { 
+        color: var(--text-primary); 
+        font-weight: 600; 
+        cursor: pointer; 
+        text-decoration: none;
+        transition: all 0.2s ease;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+    }
+    .register-link span:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.1);
+        text-decoration: underline;
+    }
+    
+    .modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 100; display: none; align-items: center; justify-content: center; }
+    .modal-content { background: var(--bg-secondary); border-radius: 16px; width: 90%; max-width: 450px; padding: 2rem; text-align: center; position: relative; animation: slideIn 0.3s ease-out; }
+    @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-close { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-secondary); }
+    .modal-content h2 { margin-bottom: 1rem; } .modal-content p { color: var(--text-secondary); line-height: 1.6; } .modal-content a { color: var(--text-primary); font-weight: 600; }
+    
+    /* ANIMAÇÃO DE TRANSIÇÃO DE PÁGINA (VINHETA) */
+    .transition-overlay {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background-color: #0a0a0a; z-index: 9999;
+        display: flex; justify-content: center; align-items: center;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.5s ease-in-out;
+    }
+    .transition-overlay.active { opacity: 1; pointer-events: all; }
+    .transition-logo { font-size: 5rem; font-weight: 700; color: #fff; }
+    .transition-logo span {
+        display: inline-block; opacity: 0; transform: translateY(20px);
+        animation: fadeInLetter 0.5s forwards;
+    }
+    @keyframes fadeInLetter { to { opacity: 1; transform: translateY(0); } }
+    
+    /* Tema claro para o card de login */
+    [data-theme='light'] .login-card {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.1),
+            0 0 0 1px rgba(0, 0, 0, 0.05),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    [data-theme='light'] .login-card::before {
+        background: linear-gradient(135deg, 
+            rgba(0, 0, 0, 0.02) 0%, 
+            rgba(0, 0, 0, 0.01) 50%, 
+            rgba(0, 0, 0, 0.005) 100%);
+    }
+    [data-theme='light'] .login-card:hover {
+        box-shadow: 
+            0 30px 80px rgba(0, 0, 0, 0.15),
+            0 0 0 1px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 1);
+        border-color: rgba(0, 0, 0, 0.2);
+    }
+    [data-theme='light'] .login-header h1 {
+        background: linear-gradient(135deg, #1d1d1f, #6e6e73);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    [data-theme='light'] .form-input, [data-theme='light'] .form-select {
+        background: rgba(255, 255, 255, 0.7);
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        color: var(--text-primary);
+    }
+    [data-theme='light'] .form-input:focus, [data-theme='light'] .form-select:focus {
+        border-color: rgba(0, 0, 0, 0.3);
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 
+            0 0 0 3px rgba(0, 0, 0, 0.05),
+            0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    [data-theme='light'] .form-input::placeholder {
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    @media (max-width: 1024px) { .main-container { grid-template-columns: 1fr; } .image-panel { display: none; } }
+    
+    /* Rodapé */
+    .login-footer {
+        background: var(--surface-color);
+        border-top: 1px solid var(--border-color);
+        margin-top: auto;
+        padding: 2rem 0 1rem 0;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        padding: 0 2rem;
+    }
+    
+    .footer-section h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--highlight-color);
+    }
+    
+    .footer-section h4 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+    }
+    
+    .footer-section p {
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+    }
+    
+    .footer-section a {
+        color: var(--highlight-color);
+        text-decoration: none;
+        transition: opacity 0.2s ease;
+    }
+    
+    .footer-section a:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+    }
+    
+    .footer-bottom {
+        border-top: 1px solid var(--border-color);
+        margin-top: 2rem;
+        padding: 1rem 2rem;
+        text-align: center;
+    }
+    
+    .footer-bottom p {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  
+  <div id="auth-loader">
+    <div class="spinner"></div>
+    <p>Verificando sua sessão...</p>
+  </div>
+  
+  <div class="content-wrapper" id="content-wrapper">
+    <header>
+      <div class="header-logo"><img src="logo.png" alt="Saga Logo"><span>Saga</span></div>
+      <div class="theme-toggle">
+        <button id="theme-toggle-dark" title="Tema Escuro">🌙</button>
+        <button id="theme-toggle-light" title="Tema Claro">☀️</button>
+      </div>
+    </header>
+
+    <main class="main-container">
+      <div class="image-panel">
+        <img src="login.png" alt="Saga Login" class="login-image" />
+        <div class="quote-container"><blockquote class="quote"><p class="quote-text">"Os que são loucos o suficiente para achar que podem mudar o mundo, são os que, de fato, o mudam."</p><footer>- Steve Jobs</footer></blockquote></div>
+      </div>
+      <div class="login-panel">
+        <div class="login-card">
+          <div class="login-header"><h1>Bem-vindo de volta</h1><p>Faça login para acessar sua plataforma.</p></div>
+          <form id="login-form">
+            <div class="form-group"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><select id="role-select" class="form-select"><option value="aluno">Sou Aluno</option><option value="responsavel">Sou Responsável</option><option value="docente">Sou Professor</option></select></div>
+            <div class="form-group"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><input id="email-input" type="email" class="form-input" placeholder="Email" required></div>
+            <div class="form-group"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><input id="pass-input" type="password" class="form-input" placeholder="Senha" required></div>
+            <button type="submit" class="form-button" id="login-button">Entrar</button>
+          </form>
+          <p class="register-link">Não tem uma conta? <span id="register-btn">Registre-se</span></p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="transition-overlay" id="transition-overlay">
+    <h1 class="transition-logo">
+        <span style="animation-delay: 0.2s;">S</span><span style="animation-delay: 0.3s;">a</span><span style="animation-delay: 0.4s;">g</span><span style="animation-delay: 0.5s;">a</span>
+    </h1>
+  </div>
+
+  <div class="modal-backdrop" id="register-modal">
+    <div class="modal-content"><button class="modal-close" id="modal-close-btn">&times;</button><h2>Interessado no Saga?</h2><p>O registro é realizado através da matrícula de sua instituição de ensino em nossa plataforma.<br><br>Se você é um administrador escolar e deseja matricular sua instituição, por favor, entre em contato conosco pelo e-mail:</p><a href="mailto:sagaeduca.edu.pl">sagaeduca.edu.pl</a></div>
+  </div>
+
+  <footer class="login-footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>SAGA</h3>
+        <p>Sistema Avançado de Gestão Acadêmica</p>
+      </div>
+      <div class="footer-section">
+        <h4>Suporte</h4>
+        <p><a href="mailto:suporte@saga.edu.br">suporte@saga.edu.br</a></p>
+        <p>Segunda a Sexta: 8h às 18h</p>
+      </div>
+      <div class="footer-section">
+        <h4>Contato</h4>
+        <p><a href="mailto:contato@saga.edu.br">contato@saga.edu.br</a></p>
+        <p>(11) 9999-9999</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 SAGA - Sistema Avançado de Gestão Acadêmica. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M",
+      authDomain: "saga-1d4e2.firebaseapp.com",
+      databaseURL: "https://saga-1d4e2-default-rtdb.firebaseio.com",
+      projectId: "saga-1d4e2",
+      storageBucket: "saga-1d4e2.firebasestorage.app",
+      messagingSenderId: "419315470764",
+      appId: "1:419315470764:web:4e3fd28ca21f935bc52a09",
+      measurementId: "G-SSBL21VWE3"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    const applyTheme = (theme) => {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('saga-theme', theme);
+      
+      // Atualiza a logo baseada no tema
+      const logo = document.querySelector('.header-logo img');
+      if (logo) {
+        if (theme === 'light' || theme === 'claro') {
+          logo.src = 'logoinvertido.png';
+        } else {
+          logo.src = 'logo.png';
+        }
+      }
+    };
+    document.getElementById('theme-toggle-dark').addEventListener('click', () => applyTheme('dark'));
+    document.getElementById('theme-toggle-light').addEventListener('click', () => applyTheme('light'));
+    
+    const loginForm = document.getElementById('login-form');
+    const loginButton = document.getElementById('login-button');
+    const passwordInput = document.getElementById('pass-input');
+    const authLoader = document.getElementById('auth-loader');
+    const contentWrapper = document.getElementById('content-wrapper');
+
+    // Esconde loader e mostra conteúdo
+    authLoader.style.display = 'none';
+    contentWrapper.classList.add('visible');
+
+    loginForm.addEventListener('submit', (e) => { e.preventDefault(); doLogin(); });
+
+    // NOVA FUNÇÃO: LOGIN COM ENTER
+    passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            doLogin();
+        }
+    });
+
+    async function doLogin() {
+      const role = document.getElementById('role-select').value;
+      const email = document.getElementById('email-input').value.toLowerCase().trim();
+      const pass = document.getElementById('pass-input').value;
+      
+      if (role === 'responsavel') {
+          alert('Módulo de Responsáveis em desenvolvimento.');
+          return;
+      }
+
+      loginButton.disabled = true;
+      loginButton.textContent = "Entrando...";
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+        const user = userCredential.user;
+        const userEmail = user.email.toLowerCase();
+        let destination = '';
+        let loginSuccess = false;
+
+        if (role === 'docente' && userEmail.includes('professor')) {
+            destination = 'professor/professordash.html';
+            loginSuccess = true;
+        } else if (role === 'aluno' && !userEmail.includes('professor')) {
+            destination = 'aluno/alunoinicio.html';
+            loginSuccess = true;
+        } else {
+            await signOut(auth);
+            alert(role === 'docente' ? 'Acesso negado: Este email não é de um professor.' : 'Acesso negado: Professores devem entrar pelo módulo "Professor".');
+        }
+
+        if (loginSuccess) {
+            // Salva dados do usuário no Firebase
+            const userData = {
+              nome: userEmail.includes('professor') ? 'Prof. ' + userEmail.split('@')[0] : userEmail.split('@')[0],
+              email: userEmail,
+              tipo: userEmail.includes('professor') ? 'professor' : 'aluno',
+              turma: userEmail.includes('professor') ? null : '3º Ano - Ensino Médio',
+              disciplina: userEmail.includes('professor') ? 'Matemática' : null,
+              ultimoLogin: new Date().toISOString()
+            };
+            
+            set(ref(database, `users/${user.uid}`), userData);
+            
+            // ATIVA A ANIMAÇÃO DE VINHETA
+            const overlay = document.getElementById('transition-overlay');
+            overlay.classList.add('active');
+            
+            // ESPERA A ANIMAÇÃO E REDIRECIONA
+            setTimeout(() => { 
+                window.location.href = destination; 
+            }, 1200);
+        } else {
+            loginButton.disabled = false;
+            loginButton.textContent = "Entrar";
+        }
+      } catch (error) {
+        alert('Email ou senha inválidos.');
+        loginButton.disabled = false;
+        loginButton.textContent = "Entrar";
+      }
+    }
+
+    const registerModal = document.getElementById('register-modal');
+    document.getElementById('register-btn').addEventListener('click', () => registerModal.style.display = 'flex');
+    document.getElementById('modal-close-btn').addEventListener('click', () => registerModal.style.display = 'none');
+    registerModal.addEventListener('click', (e) => { if (e.target === registerModal) { registerModal.style.display = 'none'; }});
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme(localStorage.getItem('saga-theme') || 'dark');
+    });
+  </script>
+</body>
+</html>

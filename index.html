@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S.A.G.A. - Sistema de Acompanhamento e Gestão Acadêmica</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #000;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    /* HERO */
+    .secao-heroi {
+      height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #canvas-heroi {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    }
+    .texto-heroi {
+      position: relative; z-index: 10; text-align: center; opacity: 0;
+    }
+    .texto-heroi h1 {
+      font-size: clamp(3rem, 8vw, 7rem); font-weight: 300; letter-spacing: -0.02em;
+    }
+    .indicador-scroll {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      z-index: 10; opacity: 0;
+    }
+    .indicador-scroll span {
+      display: block; width: 20px; height: 30px;
+      border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 15px; position: relative;
+    }
+    .indicador-scroll span::before {
+      content: ''; position: absolute; top: 5px; left: 50%; transform: translateX(-50%);
+      width: 4px; height: 8px; background: rgba(255, 255, 255, 0.5); border-radius: 2px;
+      animation: scroll-down 2s infinite;
+    }
+    @keyframes scroll-down { 0% { opacity: 0; top: 5px; } 50% { opacity: 1; top: 12px; } 100% { opacity: 0; top: 5px; } }
+    /* SCROLL ANIMATION */
+    .secao-animacao-scroll {
+      height: 500vh;
+      position: relative;
+    }
+    .container-canvas-scroll {
+      position: sticky; top: 0; height: 100vh; width: 100%;
+    }
+    #canvas-scroll { width: 100%; height: 100%; }
+    /* PROBLEM & SOLUTION */
+    .secao-problema-solucao {
+      min-height: 100vh; padding: 10vh 5vw; position: relative;
+    }
+    .logo-fixo {
+      position: sticky; top: 30px; width: 120px; height: 120px; z-index: 100;
+    }
+    #canvas-logo-fixo { width: 100%; height: 100%; }
+    .container-conteudo { max-width: 900px; margin: 0 auto; padding-top: 20vh; }
+    .declaracao {
+      font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 300; line-height: 1.4;
+      margin-bottom: 3rem; opacity: 0; transform: translateY(20px);
+    }
+    .declaracao.grande {
+      font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 600; margin-top: 5rem; margin-bottom: 2rem;
+    }
+    .declaracao.sub {
+      font-size: clamp(1.8rem, 3.5vw, 3rem); font-weight: 400; color: rgba(255, 255, 255, 0.7);
+    }
+    /* FEATURES CARDS */
+    .secao-funcionalidades {
+      padding: 20vh 5vw;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .funcionalidade-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      margin-bottom: 15vh;
+      padding: 4rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      transition: all 0.5s ease;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    .funcionalidade-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(0, 255, 255, 0.3);
+      transform: translateY(-10px);
+      box-shadow: 0 20px 60px rgba(0, 255, 255, 0.2);
+    }
+    .funcionalidade-card:nth-child(even) {
+      grid-template-columns: 1fr 1fr;
+    }
+    .funcionalidade-card:nth-child(even) .texto-funcionalidade { order: 2; }
+    .funcionalidade-card:nth-child(even) .visual-funcionalidade { order: 1; }
+    .texto-funcionalidade h2 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      line-height: 1;
+      background: linear-gradient(135deg, #00ffff, #0099ff);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .texto-funcionalidade p {
+      font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+    .btn-detalhes {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 50px;
+      color: #00ffff;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    .btn-detalhes:hover {
+      background: rgba(0, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+    .visual-funcionalidade {
+      height: 400px;
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .visual-funcionalidade canvas { width: 100%; height: 100%; }
+    /* MODAL POPUP */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+    }
+    .modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.3s forwards;
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+    .modal-conteudo {
+      background: rgba(20, 20, 20, 0.95);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 24px;
+      padding: 3rem;
+      max-width: 700px;
+      width: 90%;
+      position: relative;
+      transform: scale(0.9);
+      animation: modalPop 0.3s forwards;
+    }
+    @keyframes modalPop { to { transform: scale(1); } }
+    .modal-fechar {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .modal-fechar:hover {
+      background: rgba(255, 0, 0, 0.3);
+      transform: rotate(90deg);
+    }
+    .modal-conteudo h3 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      color: #00ffff;
+    }
+    .modal-conteudo ul {
+      list-style: none;
+      padding: 0;
+    }
+    .modal-conteudo li {
+      padding: 0.8rem 0;
+      padding-left: 2rem;
+      position: relative;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.6;
+    }
+    .modal-conteudo li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #00ffff;
+      font-weight: bold;
+    }
+    /* PRICING SECTION */
+    .secao-precos {
+      padding: 15vh 5vw;
+      background: linear-gradient(180deg, #000 0%, #001a1a 100%);
+    }
+    .precos-titulo {
+      text-align: center;
+      margin-bottom: 8vh;
+    }
+    .precos-titulo h2 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      font-weight: 600;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #00ffff, #0099ff);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .precos-titulo p {
+      font-size: clamp(1.2rem, 2vw, 1.5rem);
+      color: rgba(255, 255, 255, 0.6);
+    }
+    .container-planos {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto 8vh;
+    }
+    .plano-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 3rem 2rem;
+      text-align: center;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .plano-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .plano-card:hover::before { opacity: 1; }
+    .plano-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(0, 255, 255, 0.5);
+      box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
+    }
+    .plano-card.destaque {
+      background: rgba(0, 255, 255, 0.05);
+      border-color: rgba(0, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+    .plano-icone {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+    }
+    .plano-card h3 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #00ffff;
+    }
+    .plano-preco {
+      font-size: 3.5rem;
+      font-weight: 600;
+      margin: 1.5rem 0;
+    }
+    .plano-preco span {
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    .plano-features {
+      list-style: none;
+      padding: 2rem 0;
+      text-align: left;
+    }
+    .plano-features li {
+      padding: 0.8rem 0;
+      padding-left: 2rem;
+      position: relative;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .plano-features li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #00ffff;
+      font-weight: bold;
+    }
+    .plano-bonus {
+      background: rgba(0, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+      color: #00ffff;
+    }
+    .plano-btn {
+      width: 100%;
+      padding: 1.2rem;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 12px;
+      color: #00ffff;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .plano-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+    .plano-card.destaque .plano-btn {
+      background: #00ffff;
+      color: #000;
+    }
+    .plano-card.destaque .plano-btn:hover {
+      background: #00cccc;
+    }
+    /* INSTITUTIONAL PLAN */
+    .plano-institucional {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 153, 255, 0.1));
+      border: 2px solid rgba(0, 255, 255, 0.3);
+      border-radius: 24px;
+      padding: 4rem;
+      text-align: center;
+    }
+    .plano-institucional h3 {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      margin-bottom: 1.5rem;
+      color: #00ffff;
+    }
+    .plano-institucional p {
+      font-size: 1.3rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+    .institucional-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+    .institucional-feature {
+      padding: 1.5rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 16px;
+    }
+    .institucional-feature h4 {
+      color: #00ffff;
+      margin-bottom: 0.5rem;
+    }
+    /* LIBRARY SECTION */
+    .secao-biblioteca { height: 200vh; position: relative; }
+    .container-canvas-biblioteca {
+      position: sticky; top: 0; height: 100vh; width: 100%;
+    }
+    #canvas-biblioteca { width: 100%; height: 100%; }
+    .texto-biblioteca {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      z-index: 10; text-align: center; opacity: 0;
+    }
+    .texto-biblioteca h2 { font-size: clamp(3rem, 7vw, 6rem); font-weight: 300; }
+    /* CTA SECTION */
+    .secao-cta {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 5vh 5vw;
+    }
+    .conteudo-cta { max-width: 600px; width: 100%; text-align: center; }
+    .conteudo-cta h2 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 300; margin-bottom: 3rem; }
+    .formulario-cta { display: flex; flex-direction: column; gap: 1.5rem; }
+    .formulario-cta input {
+      padding: 1.2rem 1.5rem; font-size: 1.1rem; background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff;
+      font-family: inherit; transition: all 0.3s ease;
+    }
+    .formulario-cta input:focus {
+      outline: none; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.3);
+    }
+    .formulario-cta input::placeholder { color: rgba(255, 255, 255, 0.4); }
+    .formulario-cta button {
+      padding: 1.2rem 2rem; font-size: 1.2rem; font-weight: 500; background: #fff;
+      color: #000; border: none; border-radius: 8px; cursor: pointer;
+      transition: all 0.3s ease; font-family: inherit;
+    }
+    .formulario-cta button:hover {
+      transform: scale(1.02); box-shadow: 0 10px 40px rgba(255, 255, 255, 0.2);
+    }
+    /* LOGIN LINK */
+    #link-login:hover {
+      color: rgba(255, 255, 255, 0.9) !important;
+      transform: translateY(-2px);
+    }
+    #link-login:hover span {
+      color: #00cccc !important;
+    }
+    /* FOOTER */
+    .rodape {
+      padding: 4rem 5vw 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+    .rodape-conteudo {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .rodape-logo {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #00ffff;
+      margin-bottom: 1rem;
+    }
+    .rodape-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+    .rodape-links a {
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .rodape-links a:hover {
+      color: #00ffff;
+    }
+    .rodape-copyright {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.9rem;
+    }
+    .rodape-copyright p {
+      margin: 0.5rem 0;
+    }
+    @media (max-width: 1024px) {
+      .container-planos {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+      }
+      .plano-card.destaque {
+        transform: scale(1);
+      }
+    }
+    @media (max-width: 768px) {
+      .funcionalidade-card {
+        grid-template-columns: 1fr;
+        padding: 2rem;
+      }
+      .funcionalidade-card:nth-child(even) .texto-funcionalidade,
+      .funcionalidade-card:nth-child(even) .visual-funcionalidade {
+        order: initial;
+      }
+      .plano-institucional {
+        padding: 2rem;
+      }
+      .institucional-features {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HERO SECTION -->
+  <section class="secao-heroi">
+    <canvas id="canvas-heroi"></canvas>
+    <div class="texto-heroi">
+      <h1>Perdido no ruído?</h1>
+    </div>
+    <div class="indicador-scroll">
+      <span></span>
+    </div>
+  </section>
+  <!-- SCROLL ANIMATION -->
+  <section class="secao-animacao-scroll">
+    <div class="container-canvas-scroll">
+      <canvas id="canvas-scroll"></canvas>
+    </div>
+  </section>
+  <!-- PROBLEM & SOLUTION -->
+  <section class="secao-problema-solucao">
+    <div class="logo-fixo">
+      <canvas id="canvas-logo-fixo"></canvas>
+    </div>
+    <div class="container-conteudo">
+      <p class="declaracao">A vida acadêmica é uma tempestade de informação.</p>
+      <p class="declaracao">Ferramentas que deveriam ajudar muitas vezes aumentam a confusão.</p>
+      <p class="declaracao grande">É tempo de clareza.</p>
+      <p class="declaracao sub">S.A.G.A. O seu mundo acadêmico, organizado.</p>
+    </div>
+  </section>
+  <!-- FEATURES CARDS -->
+  <section class="secao-funcionalidades">
+    <div class="funcionalidade-card" data-modal="organizacao">
+      <div class="texto-funcionalidade">
+        <h2>Organização</h2>
+        <p>Filtre o caos instantaneamente. Veja o que importa, quando importa. O que é para amanhã? A S.A.G.A. sabe.</p>
+        <button class="btn-detalhes">Ver Detalhes →</button>
+      </div>
+      <div class="visual-funcionalidade">
+        <canvas id="canvas-funcionalidade1"></canvas>
+      </div>
+    </div>
+    <div class="funcionalidade-card" data-modal="planeamento">
+      <div class="visual-funcionalidade">
+        <canvas id="canvas-funcionalidade2"></canvas>
+      </div>
+      <div class="texto-funcionalidade">
+        <h2>Planejamento</h2>
+        <p>Sua semana, visualizada. Cada tarefa, cada aula, cada momento mapeado com precisão elegante.</p>
+        <button class="btn-detalhes">Ver Detalhes →</button>
+      </div>
+    </div>
+    <div class="funcionalidade-card" data-modal="desempenho">
+      <div class="texto-funcionalidade">
+        <h2>Desempenho</h2>
+        <p>Acompanhe seu progresso. Insights claros para entender sua jornada e alcançar seus objetivos.</p>
+        <button class="btn-detalhes">Ver Detalhes →</button>
+      </div>
+      <div class="visual-funcionalidade">
+        <canvas id="canvas-funcionalidade3"></canvas>
+      </div>
+    </div>
+  </section>
+  <!-- PRICING SECTION -->
+  <section class="secao-precos">
+    <div class="precos-titulo">
+      <h2>Escolha o Seu Plano</h2>
+      <p>Soluções flexíveis para cada estudante</p>
+    </div>
+    <div class="container-planos">
+      <!-- PLANO BÁSICO -->
+      <div class="plano-card">
+        <div class="plano-icone">
+          <canvas id="canvas-plano-basico"></canvas>
+        </div>
+        <h3>Básico</h3>
+        <div class="plano-preco">R$39,99<span>/mês</span></div>
+        <ul class="plano-features">
+          <li>Todas as funções limitadas</li>
+          <li>Calendário acadêmico</li>
+          <li>Notificações básicas</li>
+          <li>Até 5 disciplinas</li>
+          <li>Suporte por email</li>
+        </ul>
+        <div class="plano-bonus">
+          🎁 Bônus: Template de notas grátis
+        </div>
+        <button class="plano-btn">Começar Agora</button>
+      </div>
+      <!-- PLANO PRO -->
+      <div class="plano-card destaque">
+        <div class="plano-icone">
+          <canvas id="canvas-plano-pro"></canvas>
+        </div>
+        <h3>Pro</h3>
+        <div class="plano-preco">R$99,99<span>/mês</span></div>
+        <ul class="plano-features">
+          <li>Tudo do plano Básico</li>
+          <li>Disciplinas ilimitadas</li>
+          <li>Análise de desempenho</li>
+          <li>Biblioteca de recursos</li>
+          <li>Sincronização multi-dispositivo</li>
+          <li>Suporte prioritário</li>
+        </ul>
+        <div class="plano-bonus">
+          🎁 Bônus: Acesso a webinars exclusivos + 1 mês grátis
+        </div>
+        <button class="plano-btn">Mais Popular</button>
+      </div>
+      <!-- PLANO KING -->
+      <div class="plano-card">
+        <div class="plano-icone">
+          <canvas id="canvas-plano-king"></canvas>
+        </div>
+        <h3>King 👑</h3>
+        <div class="plano-preco">R$139,99<span>/mês</span></div>
+        <ul class="plano-features">
+          <li>Tudo do plano Pro</li>
+          <li>IA NexuS personalizada</li>
+          <li>Sessões de mentoria</li>
+          <li>Acesso antecipado a recursos</li>
+          <li>Certificações exclusivas</li>
+          <li>Funções ilimitadas</li>
+          <li>Suporte 24/7</li>
+        </ul>
+        <div class="plano-bonus">
+          🎁 Bônus - Digno de um REI: Kit completo de produtividade + Curso grátis + Consultoria personalizada
+        </div>
+        <button class="plano-btn">Ser King</button>
+      </div>
+    </div>
+    <!-- PLANO INSTITUCIONAL -->
+    <div class="plano-institucional">
+      <h3>Plano para Instituições</h3>
+      <p>Soluções personalizadas para escolas, universidades e centros de formação. Equipamos sua instituição com as melhores ferramentas de gestão acadêmica.</p>
+      <div class="institucional-features">
+        <div class="institucional-feature">
+          <h4>Gestão Centralizada</h4>
+          <p>Painel administrativo completo</p>
+        </div>
+        <div class="institucional-feature">
+          <h4>Licenças Ilimitadas</h4>
+          <p>Para todos os estudantes</p>
+        </div>
+        <div class="institucional-feature">
+          <h4>Integração Completa</h4>
+          <p>Com sistemas existentes</p>
+        </div>
+        <div class="institucional-feature">
+          <h4>Suporte Dedicado</h4>
+          <p>Equipe exclusiva 24/7</p>
+        </div>
+      </div>
+      <button class="plano-btn" style="max-width: 400px; margin: 2rem auto;">Solicitar Orçamento Personalizado</button>
+    </div>
+  </section>
+  <!-- LIBRARY SECTION -->
+  <section class="secao-biblioteca">
+    <div class="container-canvas-biblioteca">
+      <canvas id="canvas-biblioteca"></canvas>
+      <div class="texto-biblioteca">
+        <h2>Desbloqueie seu potencial máximo.</h2>
+      </div>
+    </div>
+  </section>
+  <!-- CTA SECTION -->
+  <section class="secao-cta">
+    <div class="conteudo-cta">
+      <h2>Peça uma Demonstração</h2>
+      <form class="formulario-cta">
+        <input type="text" placeholder="Seu Nome" required>
+        <input type="text" placeholder="Nome da Escola" required>
+        <input type="email" placeholder="Endereço de Email" required>
+        <button type="submit">Começar</button>
+      </form>
+      <div style="margin-top: 2rem; text-align: center;">
+        <a href="login.html" id="link-login" style="color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 1rem; transition: all 0.3s ease;">
+          Já sou usuário do SAGA? <span style="color: #00ffff;">Fazer Login →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+  <!-- FOOTER -->
+  <footer class="rodape">
+    <div class="rodape-conteudo">
+      <div class="rodape-logo">S.A.G.A.</div>
+      <p style="color: rgba(255, 255, 255, 0.6); margin: 1rem 0;">Sistema de Acompanhamento e Gestão Acadêmica</p>
+      <div class="rodape-links">
+        <a href="#sobre">Sobre</a>
+        <a href="#funcionalidades">Funcionalidades</a>
+        <a href="#precos">Preços</a>
+        <a href="#contato">Contato</a>
+        <a href="#privacidade">Privacidade</a>
+        <a href="#termos">Termos de Uso</a>
+      </div>
+      <div class="rodape-copyright">
+        <p>© 2025 S.A.G.A. - Sistema de Acompanhamento e Gestão Acadêmica</p>
+        <p>Todos os direitos reservados.</p>
+        <p>Desenvolvido com ❤️ para estudantes e instituições de ensino</p>
+      </div>
+    </div>
+  </footer>
+  <!-- MODAL POPUPS -->
+  <div class="modal-overlay" id="modal-organizacao">
+    <div class="modal-conteudo">
+      <button class="modal-fechar" onclick="fecharModal('organizacao')">×</button>
+      <h3>Organização Inteligente</h3>
+      <ul>
+        <li>Sistema de filtros avançado para visualizar apenas o que importa</li>
+        <li>Priorização automática baseada em prazos e importância</li>
+        <li>Categorização inteligente de tarefas por disciplina</li>
+        <li>Vista rápida das tarefas de hoje, amanhã e esta semana</li>
+        <li>Etiquetas personalizáveis para organização customizada</li>
+        <li>Pesquisa instantânea em todas as suas tarefas</li>
+        <li>Sincronização automática em tempo real</li>
+      </ul>
+    </div>
+  </div>
+  <div class="modal-overlay" id="modal-planeamento">
+    <div class="modal-conteudo">
+      <button class="modal-fechar" onclick="fecharModal('planeamento')">×</button>
+      <h3>Planejamento Visual</h3>
+      <ul>
+        <li>Calendário interativo com vista semanal e mensal</li>
+        <li>Blocos de tempo para cada aula e atividade</li>
+        <li>Arrastar e soltar para reorganizar facilmente</li>
+        <li>Notificações inteligentes antes de cada compromisso</li>
+        <li>Integração com calendários externos (Google, Outlook)</li>
+        <li>Visualização de carga horária por disciplina</li>
+        <li>Sugestões de horários de estudo otimizados</li>
+      </ul>
+    </div>
+  </div>
+  <div class="modal-overlay" id="modal-desempenho">
+    <div class="modal-conteudo">
+      <button class="modal-fechar" onclick="fecharModal('desempenho')">×</button>
+      <h3>Análise de Desempenho</h3>
+      <ul>
+        <li>Gráficos interativos de evolução por disciplina</li>
+        <li>Relatórios detalhados de progresso acadêmico</li>
+        <li>Comparação de desempenho ao longo do tempo</li>
+        <li>Identificação de pontos fortes e áreas a melhorar</li>
+        <li>Estatísticas de tempo dedicado a cada disciplina</li>
+        <li>Previsão de notas baseada em tendências</li>
+        <li>Insights personalizados com recomendações de estudo</li>
+      </ul>
+    </div>
+  </div>
+  <script>
+    // SMOOTH SCROLL (LENIS)
+    const lenis = new Lenis();
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+    gsap.ticker.lagSmoothing(0);
+
+    // MODAL FUNCTIONS
+    function fecharModal(id) {
+      const modal = document.getElementById('modal-' + id);
+      modal.classList.remove('active');
+    }
+    document.querySelectorAll('.funcionalidade-card').forEach(card => {
+      card.addEventListener('click', function(e) {
+        if (!e.target.classList.contains('btn-detalhes')) return;
+        const modalId = this.getAttribute('data-modal');
+        document.getElementById('modal-' + modalId).classList.add('active');
+      });
+    });
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('active');
+        }
+      });
+    });
+
+    // HERO PARTICLES
+    const canvasHeroi = document.getElementById('canvas-heroi');
+    const cenaHeroi = new THREE.Scene();
+    const cameraHeroi = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const rendererHeroi = new THREE.WebGLRenderer({ canvas: canvasHeroi, alpha: true, antialias: true });
+    rendererHeroi.setSize(window.innerWidth, window.innerHeight);
+    cameraHeroi.position.z = 50;
+    const contagemParticulasHeroi = 5000;
+    const geometriaHeroi = new THREE.BufferGeometry();
+    const posicoesHeroi = new Float32Array(contagemParticulasHeroi * 3);
+    const velocidadesHeroi = [];
+    for (let i = 0; i < contagemParticulasHeroi * 3; i += 3) {
+      posicoesHeroi[i] = (Math.random() - 0.5) * 100;
+      posicoesHeroi[i + 1] = (Math.random() - 0.5) * 100;
+      posicoesHeroi[i + 2] = (Math.random() - 0.5) * 100;
+      velocidadesHeroi.push({ x: (Math.random() - 0.5) * 0.02, y: (Math.random() - 0.5) * 0.02, z: (Math.random() - 0.5) * 0.02 });
+    }
+    geometriaHeroi.setAttribute('position', new THREE.BufferAttribute(posicoesHeroi, 3));
+    const materialHeroi = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.3, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending });
+    const particulasHeroi = new THREE.Points(geometriaHeroi, materialHeroi);
+    cenaHeroi.add(particulasHeroi);
+    let mouseX = 0, mouseY = 0;
+    document.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+    function animarHeroi() {
+      requestAnimationFrame(animarHeroi);
+      const posicoes = geometriaHeroi.attributes.position.array;
+      for (let i = 0; i < contagemParticulasHeroi; i++) {
+        const i3 = i * 3;
+        posicoes[i3] += velocidadesHeroi[i].x;
+        posicoes[i3 + 1] += velocidadesHeroi[i].y;
+        posicoes[i3 + 2] += velocidadesHeroi[i].z;
+        if (Math.abs(posicoes[i3]) > 50) velocidadesHeroi[i].x *= -1;
+        if (Math.abs(posicoes[i3 + 1]) > 50) velocidadesHeroi[i].y *= -1;
+        if (Math.abs(posicoes[i3 + 2]) > 50) velocidadesHeroi[i].z *= -1;
+      }
+      geometriaHeroi.attributes.position.needsUpdate = true;
+      particulasHeroi.rotation.x += mouseY * 0.001;
+      particulasHeroi.rotation.y += mouseX * 0.001;
+      rendererHeroi.render(cenaHeroi, cameraHeroi);
+    }
+    animarHeroi();
+    gsap.to('.texto-heroi', { opacity: 1, duration: 2, delay: 0.5 });
+    gsap.to('.indicador-scroll', { opacity: 1, duration: 1, delay: 2 });
+
+    // SCROLL ANIMATION (SAGA LOGO FORMATION)
+    const canvasScroll = document.getElementById('canvas-scroll');
+    const cenaScroll = new THREE.Scene();
+    const cameraScroll = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const rendererScroll = new THREE.WebGLRenderer({ canvas: canvasScroll, alpha: true, antialias: true });
+    rendererScroll.setSize(window.innerWidth, window.innerHeight);
+    cameraScroll.position.z = 50;
+    const contagemParticulasScroll = 4000;
+    const geometriaScroll = new THREE.BufferGeometry();
+    const posicoesIniciaisScroll = new Float32Array(contagemParticulasScroll * 3);
+    const posicoesFinaisScroll = new Float32Array(contagemParticulasScroll * 3);
+    for (let i = 0; i < contagemParticulasScroll * 3; i++) {
+      posicoesIniciaisScroll[i] = (Math.random() - 0.5) * 100;
+    }
+    for (let i = 0; i < contagemParticulasScroll; i++) {
+      const angle = (i / contagemParticulasScroll) * Math.PI * 4;
+      const radius = 15 + Math.random() * 5;
+      posicoesFinaisScroll[i * 3] = Math.cos(angle) * radius + (Math.random() - 0.5) * 2;
+      posicoesFinaisScroll[i * 3 + 1] = Math.sin(angle) * radius + (Math.random() - 0.5) * 2;
+      posicoesFinaisScroll[i * 3 + 2] = (Math.random() - 0.5) * 5;
+    }
+    geometriaScroll.setAttribute('position', new THREE.BufferAttribute(posicoesIniciaisScroll.slice(), 3));
+    const materialScroll = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.4, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+    const particulasScroll = new THREE.Points(geometriaScroll, materialScroll);
+    cenaScroll.add(particulasScroll);
+    function animarScroll() {
+      requestAnimationFrame(animarScroll);
+      rendererScroll.render(cenaScroll, cameraScroll);
+    }
+    animarScroll();
+    const linhaTempoScroll = gsap.timeline({
+      scrollTrigger: {
+        trigger: '.secao-animacao-scroll',
+        start: 'top top', end: 'bottom bottom',
+        scrub: 1, pin: '.container-canvas-scroll'
+      }
+    });
+    linhaTempoScroll
+      .to(particulasScroll.rotation, { y: Math.PI * 2, duration: 1 })
+      .to({}, {
+        duration: 2,
+        onUpdate: function() {
+          const progress = this.progress();
+          const currentPositions = geometriaScroll.attributes.position.array;
+          for (let i = 0; i < currentPositions.length; i++) {
+            currentPositions[i] = posicoesIniciaisScroll[i] * (1 - progress) + posicoesFinaisScroll[i] * progress;
+          }
+          geometriaScroll.attributes.position.needsUpdate = true;
+        }
+      }, 0.5)
+      .to(cameraScroll.position, { z: 30, duration: 1 }, 1.5);
+
+    // FIXED LOGO
+    const canvasLogoFixo = document.getElementById('canvas-logo-fixo');
+    const cenaLogoFixo = new THREE.Scene();
+    const cameraLogoFixo = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const rendererLogoFixo = new THREE.WebGLRenderer({ canvas: canvasLogoFixo, alpha: true, antialias: true });
+    rendererLogoFixo.setSize(120, 120);
+    cameraLogoFixo.position.z = 15;
+    const geometriaLogoFixo = new THREE.IcosahedronGeometry(5, 0);
+    const materialLogoFixo = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true });
+    const logoFixo = new THREE.Mesh(geometriaLogoFixo, materialLogoFixo);
+    cenaLogoFixo.add(logoFixo);
+    function animarLogoFixo() {
+      requestAnimationFrame(animarLogoFixo);
+      logoFixo.rotation.x += 0.01;
+      logoFixo.rotation.y += 0.01;
+      rendererLogoFixo.render(cenaLogoFixo, cameraLogoFixo);
+    }
+    animarLogoFixo();
+    gsap.utils.toArray('.declaracao').forEach((el) => {
+      gsap.fromTo(el, { opacity: 0, y: 30 }, {
+        opacity: 1, y: 0, duration: 1,
+        scrollTrigger: { trigger: el, start: 'top 80%' }
+      });
+    });
+    // FEATURES CARDS ANIMATIONS
+    gsap.utils.toArray('.funcionalidade-card').forEach((card, i) => {
+      gsap.fromTo(card,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+          }
+        }
+      );
+    });
+    // FEATURES 3D VISUALS
+    const resizeFeatureCanvas = (renderer, camera, canvas) => {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        renderer.setSize(rect.width, rect.height);
+        camera.aspect = rect.width / rect.height;
+        camera.updateProjectionMatrix();
+      }
+    };
+    // Feature 1: Organization (filter boxes)
+    const cF1 = document.getElementById('canvas-funcionalidade1');
+    const sF1 = new THREE.Scene();
+    const camF1 = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const rF1 = new THREE.WebGLRenderer({ canvas: cF1, alpha: true, antialias: true });
+    camF1.position.z = 30;
+    const blocos = [];
+    for (let i = 0; i < 50; i++) {
+      const geo = new THREE.BoxGeometry(2, 2, 2);
+      const mat = new THREE.MeshBasicMaterial({
+        color: Math.random() > 0.5 ? 0x00ffff : 0xff00ff,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.6
+      });
+      const bloco = new THREE.Mesh(geo, mat);
+      bloco.position.set((Math.random() - 0.5) * 30, (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 10);
+      bloco.userData = { initialScale: 1, initialOpacity: 0.6 };
+      blocos.push(bloco);
+      sF1.add(bloco);
+    }
+    const tlF1 = gsap.timeline({
+      scrollTrigger: { trigger: '#canvas-funcionalidade1', start: 'top center', end: 'bottom center', scrub: 1 }
+    });
+    blocos.forEach((bloco, i) => {
+      const isHighlighted = i < 5;
+      const targetScale = isHighlighted ? 1.5 : 0.5;
+      const targetOpacity = isHighlighted ? 1 : 0.1;
+      tlF1.to(bloco.scale, { x: targetScale, y: targetScale, z: targetScale }, 0);
+      tlF1.to(bloco.material, { opacity: targetOpacity }, 0);
+    });
+    function animarF1() {
+      blocos.forEach(bloco => {
+        bloco.rotation.x += 0.005;
+        bloco.rotation.y += 0.005;
+      });
+    }
+    // Feature 2: Planning (grid)
+    const cF2 = document.getElementById('canvas-funcionalidade2');
+    const sF2 = new THREE.Scene();
+    const camF2 = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const rF2 = new THREE.WebGLRenderer({ canvas: cF2, alpha: true, antialias: true });
+    camF2.position.z = 25;
+    const celulas = [];
+    const celulasMeshes = [];
+    for (let row = 0; row < 7; row++) {
+      for (let col = 0; col < 5; col++) {
+        const geo = new THREE.PlaneGeometry(3, 3);
+        const mat = new THREE.MeshBasicMaterial({
+          color: 0x00ffff,
+          transparent: true,
+          opacity: 0,
+          side: THREE.DoubleSide
+        });
+        const celula = new THREE.Mesh(geo, mat);
+        celula.position.set(col * 3.5 - 7, row * 3.5 - 10.5, 0);
+        celulas.push(celula.material);
+        celulasMeshes.push(celula);
+        sF2.add(celula);
+      }
+    }
+    gsap.to(celulas, {
+      scrollTrigger: { trigger: '#canvas-funcionalidade2', start: 'top center', scrub: 1 },
+      opacity: 0.8,
+      stagger: 0.02
+    });
+    function animarF2() {
+      celulasMeshes.forEach((celula, i) => {
+        celula.rotation.z = Math.sin(Date.now() * 0.001 + i * 0.1) * 0.05;
+      });
+    }
+    // Feature 3: Performance (bar charts)
+    const cF3 = document.getElementById('canvas-funcionalidade3');
+    const sF3 = new THREE.Scene();
+    const camF3 = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const rF3 = new THREE.WebGLRenderer({ canvas: cF3, alpha: true, antialias: true });
+    camF3.position.z = 20;
+    const barras = [];
+    for (let i = 0; i < 12; i++) {
+      const altura = Math.random() * 10 + 2;
+      const geo = new THREE.BoxGeometry(1.5, altura, 1.5);
+      const mat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.8 });
+      const barra = new THREE.Mesh(geo, mat);
+      barra.position.set(i * 2 - 11, -5, 0);
+      barra.scale.y = 0;
+      barras.push({ mesh: barra, finalHeight: altura });
+      sF3.add(barra);
+    }
+    gsap.to(barras, {
+      scrollTrigger: { trigger: '#canvas-funcionalidade3', start: 'top center', end: 'bottom center', scrub: 1 },
+      onUpdate: function() {
+        const progress = this.progress();
+        barras.forEach((bar) => {
+          bar.mesh.scale.y = progress;
+          bar.mesh.position.y = -5 + (bar.finalHeight / 2) * progress;
+        });
+      }
+    });
+    function animarF3() {
+      barras.forEach((bar, i) => {
+        bar.mesh.rotation.y += 0.01;
+      });
+    }
+    function animarFuncionalidades() {
+      requestAnimationFrame(animarFuncionalidades);
+      animarF1();
+      animarF2();
+      animarF3();
+      rF1.render(sF1, camF1); resizeFeatureCanvas(rF1, camF1, cF1);
+      rF2.render(sF2, camF2); resizeFeatureCanvas(rF2, camF2, cF2);
+      rF3.render(sF3, camF3); resizeFeatureCanvas(rF3, camF3, cF3);
+    }
+    animarFuncionalidades();
+    // PRICING PLAN ICONS
+    function criarIconePlano(canvasId, tipo) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(80, 80);
+      camera.position.z = 8;
+      let mesh;
+      if (tipo === 'basico') {
+        const geo = new THREE.BoxGeometry(3, 3, 3);
+        const mat = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true });
+        mesh = new THREE.Mesh(geo, mat);
+      } else if (tipo === 'pro') {
+        const geo = new THREE.OctahedronGeometry(2.5);
+        const mat = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true });
+        mesh = new THREE.Mesh(geo, mat);
+      } else if (tipo === 'king') {
+        const crownGroup = new THREE.Group();
+        const baseGeo = new THREE.CylinderGeometry(2, 2.5, 1, 6);
+        const baseMat = new THREE.MeshBasicMaterial({ color: 0xFFD700, wireframe: true });
+        const base = new THREE.Mesh(baseGeo, baseMat);
+        crownGroup.add(base);
+        for (let i = 0; i < 6; i++) {
+          const spikeGeo = new THREE.ConeGeometry(0.5, 2, 4);
+          const spikeMat = new THREE.MeshBasicMaterial({ color: 0xFFD700, wireframe: true });
+          const spike = new THREE.Mesh(spikeGeo, spikeMat);
+          const angle = (i / 6) * Math.PI * 2;
+          spike.position.x = Math.cos(angle) * 2;
+          spike.position.z = Math.sin(angle) * 2;
+          spike.position.y = 1.5;
+          crownGroup.add(spike);
+        }
+        mesh = crownGroup;
+      }
+      scene.add(mesh);
+      function animate() {
+        requestAnimationFrame(animate);
+        mesh.rotation.y += 0.01;
+        if (tipo !== 'king') mesh.rotation.x += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
+    }
+    criarIconePlano('canvas-plano-basico', 'basico');
+    criarIconePlano('canvas-plano-pro', 'pro');
+    criarIconePlano('canvas-plano-king', 'king');
+
+    // LIBRARY SECTION
+    const canvasBiblioteca = document.getElementById('canvas-biblioteca');
+    const cenaBiblioteca = new THREE.Scene();
+    const cameraBiblioteca = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const rendererBiblioteca = new THREE.WebGLRenderer({ canvas: canvasBiblioteca, alpha: true, antialias: true });
+    rendererBiblioteca.setSize(window.innerWidth, window.innerHeight);
+    cameraBiblioteca.position.z = 100;
+    const nos = new THREE.Group();
+    const nosArray = [];
+    for (let i = 0; i < 100; i++) {
+      const geo = new THREE.SphereGeometry(0.5, 16, 16);
+      const mat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.8 });
+      const no = new THREE.Mesh(geo, mat);
+      no.position.set((Math.random() - 0.5) * 80, (Math.random() - 0.5) * 80, (Math.random() - 0.5) * 80);
+      nosArray.push(no);
+      nos.add(no);
+    }
+    cenaBiblioteca.add(nos);
+    const linesMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.2 });
+    for (let i = 0; i < 50; i++) {
+      const points = [];
+      const node1 = nosArray[Math.floor(Math.random() * nosArray.length)];
+      const node2 = nosArray[Math.floor(Math.random() * nosArray.length)];
+      points.push(node1.position);
+      points.push(node2.position);
+      const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+      const line = new THREE.Line(lineGeometry, linesMaterial);
+      cenaBiblioteca.add(line);
+    }
+    function animarBiblioteca() {
+      requestAnimationFrame(animarBiblioteca);
+      nos.rotation.y += 0.001;
+      nos.rotation.x += 0.0005;
+      rendererBiblioteca.render(cenaBiblioteca, cameraBiblioteca);
+    }
+    animarBiblioteca();
+    gsap.to('.texto-biblioteca', {
+      opacity: 1,
+      duration: 2,
+      scrollTrigger: { trigger: '.secao-biblioteca', start: 'top center' }
+    });
+    gsap.to(cameraBiblioteca.position, {
+      z: 20,
+      scrollTrigger: { trigger: '.secao-biblioteca', start: 'top top', end: 'bottom bottom', scrub: 1 }
+    });
+
+    // GLOBAL EVENTS
+    window.addEventListener('resize', () => {
+      const w = window.innerWidth, h = window.innerHeight;
+      cameraHeroi.aspect = w/h; cameraHeroi.updateProjectionMatrix(); rendererHeroi.setSize(w,h);
+      cameraScroll.aspect = w/h; cameraScroll.updateProjectionMatrix(); rendererScroll.setSize(w,h);
+      cameraBiblioteca.aspect = w/h; cameraBiblioteca.updateProjectionMatrix(); rendererBiblioteca.setSize(w,h);
+      ScrollTrigger.refresh();
+    });
+
+    // LOGIN LINK FUNCTIONALITY
+    document.addEventListener('DOMContentLoaded', function() {
+      const linkLogin = document.getElementById('link-login');
+      if (linkLogin) {
+        linkLogin.addEventListener('click', function(e) {
+          e.preventDefault();
+          // Smooth transition effect before redirect
+          document.body.style.transition = 'opacity 0.3s ease';
+          document.body.style.opacity = '0.5';
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 300);
+        });
+      }
+    });
+
+    console.log('%c🎨 S.A.G.A. Landing Page © 2025', 'font-size: 20px; color: #00ffff; font-weight: bold;');
+  </script>
+</body>
+</html>

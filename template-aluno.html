@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TITULO | Aluno | Saga</title>
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Novo Sistema de Design SAGA -->
+    <link rel="stylesheet" href="../saga-design-system.css">
+    <link rel="stylesheet" href="../saga-additional-styles.css">
+</head>
+<body class="saga-layout">
+    <main class="saga-main">
+        <div class="saga-content" style="padding: var(--space-xl);">
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover)); color: white; border-radius: var(--radius-xl); padding: var(--space-xl); margin-bottom: var(--space-xl);">
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: var(--space-xs);">TITULO_PAGINA</h1>
+                <p style="opacity: 0.9;">DESCRICAO_PAGINA</p>
+            </div>
+
+            <!-- Conteúdo Principal -->
+            <section class="saga-card">
+                <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--color-text-primary); margin-bottom: var(--space-lg);">SECAO_PRINCIPAL</h2>
+                
+                <div class="saga-empty-state">
+                    <div class="saga-empty-state-icon">📚</div>
+                    <div class="saga-empty-state-title">Em Desenvolvimento</div>
+                    <div class="saga-empty-state-description">Esta funcionalidade será implementada em breve.</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Firebase & Components -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="../saga-components.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M",
+            authDomain: "saga-1d4e2.firebaseapp.com",
+            databaseURL: "https://saga-1d4e2-default-rtdb.firebaseio.com",
+            projectId: "saga-1d4e2",
+            storageBucket: "saga-1d4e2.firebasestorage.app",
+            messagingSenderId: "419315470764",
+            appId: "1:419315470764:web:4e3fd28ca21f935bc52a09",
+            measurementId: "G-SSBL21VWE3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = '../login.html';
+            }
+        });
+
+        window.logout = function() {
+            if (confirm('Deseja realmente sair?')) {
+                auth.signOut().then(() => window.location.href = '../login.html');
+            }
+        };
+    </script>
+</body>
+</html>
