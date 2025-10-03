@@ -8,279 +8,763 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../universal-style.css">
-  <script src="../vinheta-animation.js"></script>
-  <script src="../custom-progress-bar.js"></script>
-  <script src="../modern-sidebar.js"></script>
   <style>
-    /* === Design Aprimorado - SAGA Nexus AI === */
-    :root { 
-      --font-main: 'Inter', sans-serif; 
-      --transition-speed: 0.4s;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    [data-theme='dark'] { 
-      --bg-primary: #0a0a0a; 
-      --bg-secondary: #141414; 
-      --surface-color: rgba(26, 26, 26, 0.6);
-      --border-color: rgba(255, 255, 255, 0.1); 
-      --border-hover-color: rgba(255, 255, 255, 0.25);
-      --text-primary: #f0f0f0; 
+    :root[data-theme="dark"] {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #1a1a1a;
+      --bg-tertiary: #252525;
+      --surface: rgba(255, 255, 255, 0.05);
+      --surface-hover: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.1);
+      --border-hover: rgba(255, 255, 255, 0.2);
+      --text-primary: #ffffff;
       --text-secondary: #a0a0a0;
-      --shadow-color: rgba(0, 0, 0, 0.5); 
-      --glow-color: rgba(74, 111, 165, 0.3);
-      --highlight-color: #ffffff;
-      --accent-color: #4a6fa5; 
+      --text-tertiary: #666666;
+      --accent: #4a6fa5;
       --accent-hover: #5d84c0;
+      --accent-glow: rgba(74, 111, 165, 0.3);
+      --user-msg: #2a3f5f;
+      --ai-msg: #1e1e1e;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      --overlay: rgba(0, 0, 0, 0.5);
     }
 
-    [data-theme='light'] { 
-      --bg-primary: #f5f5f7; 
-      --bg-secondary: #ffffff; 
-      --surface-color: rgba(255, 255, 255, 0.6);
-      --border-color: rgba(0, 0, 0, 0.1); 
-      --border-hover-color: rgba(0, 0, 0, 0.25);
-      --text-primary: #1d1d1f; 
+    :root[data-theme="light"] {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f7;
+      --bg-tertiary: #e5e5e7;
+      --surface: rgba(0, 0, 0, 0.02);
+      --surface-hover: rgba(0, 0, 0, 0.05);
+      --border: rgba(0, 0, 0, 0.1);
+      --border-hover: rgba(0, 0, 0, 0.2);
+      --text-primary: #1d1d1f;
       --text-secondary: #6e6e73;
-      --shadow-color: rgba(0, 0, 0, 0.1); 
-      --glow-color: rgba(58, 90, 140, 0.2);
-      --highlight-color: #000000;
-      --accent-color: #3a5a8c; 
+      --text-tertiary: #999999;
+      --accent: #3a5a8c;
       --accent-hover: #4a6fa5;
+      --accent-glow: rgba(58, 90, 140, 0.2);
+      --user-msg: #007aff;
+      --ai-msg: #f0f0f0;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      --overlay: rgba(255, 255, 255, 0.9);
     }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--bg-primary);
-      background-image: radial-gradient(circle at 50% 0%, var(--bg-secondary), var(--bg-primary) 70%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
       color: var(--text-primary);
-      font-family: var(--font-main);
-      transition: background-color 0.5s ease;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      transition: all 0.3s ease;
+      overflow-x: hidden;
     }
 
-    canvas#particles-js { /* Presumindo que você use particles.js */
-      position: fixed; top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      z-index: -1; pointer-events: none;
-    }
-
-    /* === Header Moderno === */
-    header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border-color);
-      background: rgba(10, 10, 10, 0.5); 
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      transition: all var(--transition-speed) ease;
-    }
-    [data-theme='light'] header {
-      background: rgba(245, 245, 247, 0.5);
-    }
-    .logo { width: 36px; height: 36px; cursor: pointer; transition: transform 0.3s ease; }
-    .logo:hover { transform: scale(1.1) rotate(5deg); }
-    .header-left h1 { font-size: 1.05rem; font-weight: 600; }
-    .user-controls button {
-      background: transparent; border: 1px solid var(--border-color);
-      border-radius: 50%; width: 32px; height: 32px; font-size: 1rem;
-      cursor: pointer; color: var(--text-secondary); 
-      transition: all var(--transition-speed) ease;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .user-controls button:hover {
-      border-color: var(--highlight-color); 
-      color: var(--highlight-color);
-      transform: translateY(-2px);
-    }
-    .logout-btn { background: var(--text-secondary); color: var(--bg-primary); }
-    .logout-btn:hover { background: var(--highlight-color); }
-    
-    /* === Conteúdo Principal === */
-    main {
-      flex: 1;
-      padding: 8rem 2rem 2rem 2rem; /* Aumentado padding-top para não ficar atrás do header */
+    /* Sidebar Modern */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: 280px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 2rem;
-    }
-    
-    .back-btn {
-      align-self: flex-start;
-      margin-left: calc((100% - 800px) / 2); /* Alinha com o card */
-      padding: 0.6rem 1.2rem;
-      background: var(--surface-color);
-      border: 1px solid var(--border-color);
-      color: var(--text-primary);
-      border-radius: 8px;
-      text-decoration: none;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      transition: all var(--transition-speed) ease;
-    }
-    .back-btn:hover {
-      background: var(--bg-secondary);
-      border-color: var(--border-hover-color);
-      transform: translateX(-4px);
     }
 
-    .page-title {
-      text-align: center;
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: opacity 0.2s;
+    }
+
+    .sidebar-logo:hover {
+      opacity: 0.8;
+    }
+
+    .sidebar-logo img {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+    }
+
+    .sidebar-logo span {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .close-sidebar {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .close-sidebar:hover {
+      color: var(--text-primary);
+    }
+
+    .sidebar-content {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    .sidebar-section {
       margin-bottom: 2rem;
     }
-    .page-title h1 {
-      font-size: 3.5rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(90deg, #a7b3c9, #ffffff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    [data-theme='light'] .page-title h1 {
-        background: linear-gradient(90deg, #3a5a8c, #1d1d1f);
-        -webkit-background-clip: text;
-    }
-    .page-title p {
-      font-size: 1.2rem;
-      color: var(--text-secondary);
+
+    .sidebar-section-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      padding: 0 0.5rem;
     }
 
-    .nexus-container {
-      max-width: 800px;
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.2s;
+      margin-bottom: 0.25rem;
+      cursor: pointer;
+      background: transparent;
+      border: none;
       width: 100%;
-      perspective: 1000px; /* Adicionado para efeito 3D no hover */
+      text-align: left;
+      font-size: 0.95rem;
     }
 
-    /* === O Card da Nexus AI: Onde a Mágica Acontece === */
-    .nexus-card {
-      background: var(--surface-color);
-      border: 1px solid var(--border-color);
-      border-radius: 24px;
-      padding: 2.5rem;
-      box-shadow: 0 8px 32px 0 var(--shadow-color);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      transition: all var(--transition-speed) ease-in-out;
-      animation: breathingGlow 5s ease-in-out infinite;
-    }
-    .nexus-card:hover {
-        transform: rotateX(2deg) rotateY(-2deg) scale(1.02);
-        box-shadow: 0 16px 48px 0 var(--shadow-color);
-        border-color: var(--border-hover-color);
+    .sidebar-item:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
     }
 
-    @keyframes breathingGlow {
-      0%, 100% { box-shadow: 0 8px 32px 0 var(--shadow-color), 0 0 15px var(--glow-color); }
-      50% { box-shadow: 0 8px 32px 0 var(--shadow-color), 0 0 30px var(--glow-color); }
+    .sidebar-item.active {
+      background: var(--accent);
+      color: white;
     }
 
-    .nexus-logo {
-      width: 100px;
-      height: 100px;
-      margin: 0 auto 1rem auto;
-      border-radius: 20px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 15px var(--glow-color));
+    .sidebar-item-icon {
+      font-size: 1.25rem;
     }
 
-    .nexus-card h2 {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
+    /* Theme Toggle */
+    .theme-toggle {
+      padding: 1rem;
+      border-top: 1px solid var(--border);
     }
-    
-    .nexus-description {
-      font-size: 1.1rem;
-      line-height: 1.6;
+
+    .theme-buttons {
+      display: flex;
+      gap: 0.5rem;
+      background: var(--surface);
+      padding: 0.25rem;
+      border-radius: 12px;
+    }
+
+    .theme-btn {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      background: transparent;
       color: var(--text-secondary);
-      margin-bottom: 2.5rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
     }
 
-    .coming-soon-notice {
-        background: rgba(0,0,0,0.2);
+    .theme-btn:hover {
+      background: var(--surface-hover);
+    }
+
+    .theme-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay);
+      backdrop-filter: blur(5px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 999;
+    }
+
+    .sidebar-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Main Container */
+    .main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* Header */
+    .header {
+      height: 60px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      gap: 1rem;
+    }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-toggle:hover {
+      background: var(--surface-hover);
+    }
+
+    .header-title {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-title h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      background: var(--surface);
+      border-radius: 12px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* Chat Container */
+    .chat-wrapper {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+      overflow: hidden;
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 900px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-secondary);
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .chat-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .chat-info {
+      flex: 1;
+    }
+
+    .chat-name {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .chat-status {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Messages Area */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .chat-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+      background: var(--border-hover);
+    }
+
+    .message {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 70%;
+      animation: messageSlide 0.3s ease;
+    }
+
+    @keyframes messageSlide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--surface);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125rem;
+    }
+
+    .message.user .message-avatar {
+      background: var(--user-msg);
+      color: white;
+    }
+
+    .message-content {
+      background: var(--ai-msg);
+      padding: 0.875rem 1.25rem;
+      border-radius: 18px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .message.user .message-content {
+      background: var(--user-msg);
+      color: white;
+      border-radius: 18px 18px 4px 18px;
+    }
+
+    .message:not(.user) .message-content {
+      border-radius: 18px 18px 18px 4px;
+    }
+
+    .message-content strong {
+      color: var(--accent);
+    }
+
+    .message.user .message-content strong {
+      color: white;
+      font-weight: 600;
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0.875rem 1.25rem;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--text-secondary);
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% {
+        transform: translateY(0);
+      }
+      30% {
+        transform: translateY(-10px);
+      }
+    }
+
+    /* Input Area */
+    .chat-input-container {
+      padding: 1.5rem;
+      background: var(--bg-tertiary);
+      border-top: 1px solid var(--border);
+    }
+
+    .chat-input-form {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .chat-input {
+      width: 100%;
+      padding: 0.875rem 1.25rem;
+      background: var(--bg-secondary);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .chat-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+
+    .chat-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .send-button {
+      padding: 0 1.25rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.25rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 52px;
+    }
+
+    .send-button:hover:not(:disabled) {
+      background: var(--accent-hover);
+      transform: scale(1.05);
+    }
+
+    .send-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .loading::after {
+      content: '';
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--text-secondary);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .chat-wrapper {
         padding: 1rem;
-        border-radius: 12px;
-        color: var(--text-secondary);
+      }
+
+      .message {
+        max-width: 85%;
+      }
+
+      .header-user span {
+        display: none;
+      }
+
+      .sidebar {
+        width: 100%;
+      }
     }
 
-    .coming-soon-notice h3 {
-        color: var(--text-primary);
-        font-size: 1.1rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .coming-soon-notice p {
-        font-size: 0.95rem;
-        line-height: 1.5;
+    /* Animations */
+    .fade-in {
+      animation: fadeIn 0.3s ease;
     }
 
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .slide-up {
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
-
-  <header>
-    <div class="header-left">
-      <span class="logo-wrapper">
-        <img src="logo.png" alt="Saga Logo" class="logo" onclick="window.location.href='alunoinicio.html'">
-      </span>
-      <h1>Saga Hub</h1>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="../alunoinicio.html" class="sidebar-logo">
+        <img src="../logo.png" alt="S.A.G.A. Logo" onerror="this.style.display='none'">
+        <span>S.A.G.A.</span>
+      </a>
+      <button class="close-sidebar" id="closeSidebar">✕</button>
     </div>
-    <div class="user-controls">
-      <span id="username-display" style="color: var(--text-secondary); margin-right: 0.5rem; font-weight: 500;"></span>
-      <button id="theme-toggle-dark" title="Tema Escuro">🌙</button>
-      <button id="theme-toggle-light" title="Tema Claro">☀️</button>
-      <button class="logout-btn" onclick="logout()">Sair</button>
-    </div>
-  </header>
-
-  <main>
-    <a class="back-btn" onclick="window.location.href='alunoinicio.html'">← Voltar ao Início</a>
     
-    <section class="page-title">
-      <h1>Nexus AI</h1>
-      <p>O futuro dos seus estudos começa aqui.</p>
-    </section>
+    <div class="sidebar-content">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Menu Principal</div>
+        <a href="../alunoinicio.html" class="sidebar-item">
+          <span class="sidebar-item-icon">🏠</span>
+          <span>Início</span>
+        </a>
+        <button class="sidebar-item active">
+          <span class="sidebar-item-icon">🤖</span>
+          <span>Nexus AI</span>
+        </button>
+        <a href="../gerador.html" class="sidebar-item">
+          <span class="sidebar-item-icon">📝</span>
+          <span>Gerador de Exercícios</span>
+        </a>
+        <a href="../dashboard.html" class="sidebar-item">
+          <span class="sidebar-item-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+      </div>
 
-    <div class="nexus-container">
-      <div class="nexus-card">
-        <img src="nexus.png" alt="Nexus AI" class="nexus-logo">
-        <h2>Bem-vindo ao Futuro dos Estudos</h2>
-        <div class="nexus-description">
-          A Nexus é sua assistente de estudos com inteligência artificial, projetada para revolucionar sua forma de aprender.
-        </div>
-        
-        <div class="coming-soon-notice">
-            <h3>⚙️ Aprimorando a Experiência</h3>
-            <p>
-                Nossa equipe está finalizando os últimos detalhes para garantir que a Nexus AI ofereça a melhor ajuda possível. 
-                <br><strong>Fique atento, o lançamento será em breve!</strong>
-            </p>
-        </div>
-
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Configurações</div>
+        <button class="sidebar-item" id="clearChat">
+          <span class="sidebar-item-icon">🗑️</span>
+          <span>Limpar Conversa</span>
+        </button>
+        <button class="sidebar-item" id="exportChat">
+          <span class="sidebar-item-icon">📥</span>
+          <span>Exportar Conversa</span>
+        </button>
       </div>
     </div>
-  </main>
 
+    <div class="theme-toggle">
+      <div class="sidebar-section-title">Tema</div>
+      <div class="theme-buttons">
+        <button class="theme-btn" id="themeLight">
+          <span>☀️</span>
+          <span>Claro</span>
+        </button>
+        <button class="theme-btn active" id="themeDark">
+          <span>🌙</span>
+          <span>Escuro</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Header -->
+    <header class="header">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="header-title">
+        <h1>Nexus AI</h1>
+      </div>
+      <div class="header-user">
+        <span>👤</span>
+        <span id="userName">Usuário</span>
+      </div>
+    </header>
+
+    <!-- Chat Area -->
+    <div class="chat-wrapper">
+      <div class="chat-container">
+        <div class="chat-header">
+          <div class="chat-avatar">🤖</div>
+          <div class="chat-info">
+            <div class="chat-name">Nexus AI</div>
+            <div class="chat-status">
+              <span class="status-dot"></span>
+              <span>Online - Pronto para ajudar</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+          <!-- Messages will be inserted here -->
+        </div>
+
+        <div class="chat-input-container">
+          <form class="chat-input-form" id="chatForm">
+            <div class="input-wrapper">
+              <input 
+                type="text" 
+                class="chat-input" 
+                id="chatInput" 
+                placeholder="Digite sua mensagem..."
+                autocomplete="off"
+                required
+              />
+            </div>
+            <button type="submit" class="send-button" id="sendButton">
+              ➤
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
   <script>
-    // Firebase Config (sem alterações)
+    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDhHGoe7GDJhMOjYSTbgqC7DHE2Dc_RR0M",
       authDomain: "saga-1d4e2.firebaseapp.com",
       projectId: "saga-1d4e2",
+      databaseURL: "https://saga-1d4e2-default-rtdb.firebaseio.com",
       storageBucket: "saga-1d4e2.firebasestorage.app",
       messagingSenderId: "419315470764",
       appId: "1:419315470764:web:4e3fd28ca21f935bc52a09",
-      measurementId: "G-SSBL21VWE3"
     };
 
     // Initialize Firebase
@@ -288,36 +772,504 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // Lógica de autenticação e tema (sem alterações)
+    // Gemini API Configuration
+    const GEMINI_API_KEY = "AIzaSyAjF3gkg3ixqPg5GnpLc9Gkrut4Hpbekq4";
+    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+    // Global Variables
+    let currentUser = null;
+    let conversationHistory = [];
+    let userProfile = null;
+    let isTyping = false;
+
+    // DOM Elements
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const menuToggle = document.getElementById('menuToggle');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const sendButton = document.getElementById('sendButton');
+    const userName = document.getElementById('userName');
+    const themeLight = document.getElementById('themeLight');
+    const themeDark = document.getElementById('themeDark');
+    const clearChat = document.getElementById('clearChat');
+    const exportChat = document.getElementById('exportChat');
+
+    // Sidebar Functions
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.add('open');
+      sidebarOverlay.classList.add('show');
+    });
+
+    closeSidebar.addEventListener('click', closeSidebarFn);
+    sidebarOverlay.addEventListener('click', closeSidebarFn);
+
+    function closeSidebarFn() {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('show');
+    }
+
+    // Theme Functions
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('saga-theme', theme);
+      
+      if (theme === 'light') {
+        themeLight.classList.add('active');
+        themeDark.classList.remove('active');
+      } else {
+        themeDark.classList.add('active');
+        themeLight.classList.remove('active');
+      }
+    }
+
+    themeLight.addEventListener('click', () => setTheme('light'));
+    themeDark.addEventListener('click', () => setTheme('dark'));
+
+    // Initialize theme
+    const savedTheme = localStorage.getItem('saga-theme') || 'dark';
+    setTheme(savedTheme);
+
+    // Clear Chat
+    clearChat.addEventListener('click', () => {
+      if (confirm('Tem certeza que deseja limpar toda a conversa?')) {
+        chatMessages.innerHTML = '';
+        conversationHistory = [];
+        initializeChat();
+      }
+    });
+
+    // Export Chat
+    exportChat.addEventListener('click', () => {
+      const messages = Array.from(chatMessages.querySelectorAll('.message')).map(msg => {
+        const isUser = msg.classList.contains('user');
+        const content = msg.querySelector('.message-content').textContent;
+        return `${isUser ? 'Você' : 'Nexus AI'}: ${content}`;
+      }).join('\n\n');
+
+      const blob = new Blob([messages], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `nexus-ai-conversa-${new Date().toISOString().slice(0, 10)}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Auth State Observer
     auth.onAuthStateChanged((user) => {
       if (user) {
-        const username = user.email.split('@')[0];
-        document.getElementById('username-display').textContent = `Olá, ${username}`;
+        currentUser = user;
+        const displayName = user.email.split('@')[0];
+        userName.textContent = displayName;
+        loadUserProfile();
       } else {
         window.location.href = '../login.html';
       }
     });
 
-    function logout() {
-      auth.signOut()
-        .then(() => {
-          window.location.href = '../login.html';
-        })
-        .catch((error) => {
-          console.error('Erro ao fazer logout:', error);
+    // Load User Profile
+    async function loadUserProfile() {
+      try {
+        const userId = currentUser.uid;
+        
+        // Fetch user data from multiple sources
+        const [userSnapshot, historySnapshot, progressSnapshot] = await Promise.all([
+          db.ref(`users/${userId}`).once('value'),
+          db.ref(`quiz_history/${userId}`).once('value'),
+          db.ref(`user_progress/${userId}`).once('value')
+        ]);
+
+        const userData = userSnapshot.val() || {};
+        const quizHistory = historySnapshot.val() || {};
+        const progress = progressSnapshot.val() || {};
+
+        // Process quiz history
+        const quizzes = Object.values(quizHistory);
+        let totalQuizzes = quizzes.length;
+        let totalQuestions = 0;
+        let totalCorrect = 0;
+        let topicStats = {};
+
+        quizzes.forEach(quiz => {
+          totalQuestions += quiz.totalQuestions || 0;
+          totalCorrect += quiz.correctAnswers || 0;
+          
+          const topic = quiz.topic || 'Geral';
+          if (!topicStats[topic]) {
+            topicStats[topic] = {
+              quizzes: 0,
+              questions: 0,
+              correct: 0
+            };
+          }
+          
+          topicStats[topic].quizzes++;
+          topicStats[topic].questions += quiz.totalQuestions || 0;
+          topicStats[topic].correct += quiz.correctAnswers || 0;
         });
+
+        // Calculate performance metrics
+        const overallAccuracy = totalQuestions > 0 ? 
+          ((totalCorrect / totalQuestions) * 100).toFixed(1) : 0;
+
+        // Find best and worst topics
+        let bestTopic = null;
+        let worstTopic = null;
+        let bestRate = 0;
+        let worstRate = 100;
+
+        Object.entries(topicStats).forEach(([topic, stats]) => {
+          const accuracy = stats.questions > 0 ? 
+            (stats.correct / stats.questions) * 100 : 0;
+          
+          if (accuracy > bestRate) {
+            bestRate = accuracy;
+            bestTopic = topic;
+          }
+          
+          if (accuracy < worstRate && stats.questions > 0) {
+            worstRate = accuracy;
+            worstTopic = topic;
+          }
+        });
+
+        userProfile = {
+          name: userData.name || currentUser.email.split('@')[0],
+          email: currentUser.email,
+          totalQuizzes,
+          totalQuestions,
+          totalCorrect,
+          overallAccuracy,
+          bestTopic,
+          worstTopic,
+          topicStats,
+          hasData: totalQuizzes > 0
+        };
+
+        // Initialize chat after profile is loaded
+        initializeChat();
+
+      } catch (error) {
+        console.error('Erro ao carregar perfil do usuário:', error);
+        userProfile = {
+          name: currentUser.email.split('@')[0],
+          email: currentUser.email,
+          hasData: false
+        };
+        initializeChat();
+      }
     }
 
-    const applyTheme = (theme) => {
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('saga-theme', theme);
-    };
-    
-    document.getElementById('theme-toggle-dark').addEventListener('click', () => applyTheme('dark'));
-    document.getElementById('theme-toggle-light').addEventListener('click', () => applyTheme('light'));
-    
-    window.addEventListener('DOMContentLoaded', () => {
-      applyTheme(localStorage.getItem('saga-theme') || 'dark');
+    // Initialize Chat
+    function initializeChat() {
+      // Add welcome message
+      if (chatMessages.children.length === 0) {
+        const welcomeMsg = userProfile && userProfile.hasData ? 
+          `Olá, ${userProfile.name}! 👋 Sou o Nexus AI, seu assistente educacional personalizado. 
+          
+          Vejo que você já realizou ${userProfile.totalQuizzes} quizzes com ${userProfile.overallAccuracy}% de acertos! 
+          ${userProfile.worstTopic ? `Posso te ajudar especialmente em ${userProfile.worstTopic}, onde você pode melhorar.` : ''}
+          
+          Como posso ajudar você hoje?` :
+          `Olá! 👋 Sou o Nexus AI, seu assistente educacional personalizado do S.A.G.A.
+          
+          Posso ajudar você com:
+          • 📚 Explicações de conceitos
+          • 💡 Resolução de exercícios
+          • 📝 Dicas de estudo
+          • 🎯 Preparação para provas
+          
+          Como posso ajudar você hoje?`;
+        
+        addMessage(welcomeMsg, false);
+      }
+    }
+
+    // Add Message to Chat
+    function addMessage(content, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user' : ''} fade-in`;
+      
+      messageDiv.innerHTML = `
+        <div class="message-avatar">${isUser ? '👤' : '🤖'}</div>
+        <div class="message-content">${formatMessage(content)}</div>
+      `;
+      
+      chatMessages.appendChild(messageDiv);
+      scrollToBottom();
+    }
+
+    // Format Message Content
+    function formatMessage(content) {
+      // Convert markdown-style formatting
+      let formatted = content
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code>$1</code>')
+        .replace(/\n/g, '<br>');
+      
+      // Convert bullet points
+      formatted = formatted.replace(/• /g, '&nbsp;&nbsp;• ');
+      
+      return formatted;
+    }
+
+    // Show Typing Indicator
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message typing-message fade-in';
+      typingDiv.innerHTML = `
+        <div class="message-avatar">🤖</div>
+        <div class="message-content typing-indicator">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>
+      `;
+      chatMessages.appendChild(typingDiv);
+      scrollToBottom();
+      return typingDiv;
+    }
+
+    // Remove Typing Indicator
+    function removeTypingIndicator(typingDiv) {
+      if (typingDiv && typingDiv.parentNode) {
+        typingDiv.remove();
+      }
+    }
+
+    // Scroll to Bottom
+    function scrollToBottom() {
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Build System Context
+    function buildSystemContext() {
+      let context = `Você é o Nexus AI, um assistente educacional avançado do sistema S.A.G.A. (Sistema Avançado de Gestão Acadêmica). 
+      Você deve ser útil, amigável e fornecer explicações claras e educativas.
+      
+      Informações do usuário:
+      - Nome: ${userProfile.name}
+      - Email: ${userProfile.email}`;
+      
+      if (userProfile.hasData) {
+        context += `
+        - Total de quizzes realizados: ${userProfile.totalQuizzes}
+        - Taxa de acertos geral: ${userProfile.overallAccuracy}%
+        - Melhor desempenho: ${userProfile.bestTopic || 'N/A'}
+        - Área para melhorar: ${userProfile.worstTopic || 'N/A'}
+        
+        Use essas informações para personalizar suas respostas e oferecer ajuda específica nas áreas onde o usuário tem mais dificuldade.`;
+      }
+      
+      context += `
+      
+      Diretrizes importantes:
+      1. Sempre seja educativo e encorajador
+      2. Forneça explicações detalhadas quando apropriado
+      3. Use exemplos práticos quando possível
+      4. Adapte a linguagem ao nível do estudante
+      5. Se o usuário perguntar sobre seus dados ou desempenho, use as informações fornecidas
+      6. Incentive o uso das outras ferramentas do S.A.G.A. quando relevante (Gerador de Exercícios, Dashboard)
+      7. Use formatação markdown para melhorar a legibilidade (negrito, itálico, listas)
+      8. Seja conciso mas completo nas respostas`;
+      
+      return context;
+    }
+
+    // Process Message with Gemini
+    async function processMessage(userMessage) {
+      try {
+        // Build conversation context
+        const systemContext = buildSystemContext();
+        
+        // Add user message to history
+        conversationHistory.push({
+          role: 'user',
+          parts: [{ text: userMessage }]
+        });
+        
+        // Limit conversation history to last 10 messages
+        if (conversationHistory.length > 10) {
+          conversationHistory = conversationHistory.slice(-10);
+        }
+        
+        // Prepare the request
+        const requestBody = {
+          contents: [
+            {
+              role: 'user',
+              parts: [{ text: systemContext }]
+            },
+            ...conversationHistory
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+          },
+          safetySettings: [
+            {
+              category: "HARM_CATEGORY_HARASSMENT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+              category: "HARM_CATEGORY_HATE_SPEECH",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            }
+          ]
+        };
+        
+        // Make API request
+        const response = await fetch(GEMINI_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Extract the response text
+        const aiResponse = data.candidates[0].content.parts[0].text;
+        
+        // Add AI response to history
+        conversationHistory.push({
+          role: 'model',
+          parts: [{ text: aiResponse }]
+        });
+        
+        return aiResponse;
+        
+      } catch (error) {
+        console.error('Erro ao processar mensagem:', error);
+        
+        // Return a friendly error message
+        if (error.message.includes('429')) {
+          return 'Desculpe, estou recebendo muitas solicitações no momento. Por favor, aguarde um momento e tente novamente.';
+        } else if (error.message.includes('API')) {
+          return 'Desculpe, estou com dificuldades técnicas no momento. Por favor, tente novamente em alguns instantes.';
+        } else {
+          return 'Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.';
+        }
+      }
+    }
+
+    // Handle Form Submit
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (isTyping) return;
+      
+      const message = chatInput.value.trim();
+      if (!message) return;
+      
+      // Clear input
+      chatInput.value = '';
+      
+      // Add user message
+      addMessage(message, true);
+      
+      // Set typing state
+      isTyping = true;
+      sendButton.disabled = true;
+      
+      // Show typing indicator
+      const typingIndicator = showTypingIndicator();
+      
+      try {
+        // Process message with AI
+        const response = await processMessage(message);
+        
+        // Remove typing indicator
+        removeTypingIndicator(typingIndicator);
+        
+        // Add AI response
+        addMessage(response, false);
+        
+        // Save conversation to database
+        saveConversation(message, response);
+        
+      } catch (error) {
+        console.error('Erro:', error);
+        removeTypingIndicator(typingIndicator);
+        addMessage('Desculpe, ocorreu um erro. Por favor, tente novamente.', false);
+      } finally {
+        // Reset typing state
+        isTyping = false;
+        sendButton.disabled = false;
+        chatInput.focus();
+      }
+    });
+
+    // Save Conversation to Database
+    async function saveConversation(userMessage, aiResponse) {
+      try {
+        if (!currentUser) return;
+        
+        const conversationRef = db.ref(`conversations/${currentUser.uid}`).push();
+        await conversationRef.set({
+          userMessage,
+          aiResponse,
+          timestamp: firebase.database.ServerValue.TIMESTAMP,
+          userProfile: {
+            name: userProfile.name,
+            email: userProfile.email
+          }
+        });
+      } catch (error) {
+        console.error('Erro ao salvar conversa:', error);
+      }
+    }
+
+    // Handle Enter Key
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        chatForm.dispatchEvent(new Event('submit'));
+      }
+    });
+
+    // Auto-resize input (optional)
+    chatInput.addEventListener('input', () => {
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+    });
+
+    // Handle page visibility change
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && currentUser) {
+        // Update online status when page becomes visible
+        const statusDot = document.querySelector('.status-dot');
+        if (statusDot) {
+          statusDot.style.background = '#10b981';
+        }
+      }
+    });
+
+    // Prevent closing with unsaved data
+    window.addEventListener('beforeunload', (e) => {
+      if (conversationHistory.length > 1) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
     });
   </script>
 </body>
